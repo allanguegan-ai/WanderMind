@@ -1,0 +1,2679 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WanderMind — Prototype testable</title>
+<style>
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-Thin.otf') format('opentype'); font-weight: 100; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-Thin-Italic.otf') format('opentype'); font-weight: 100; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-ExtraLight.otf') format('opentype'); font-weight: 200; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-ExtraLight-Italic.otf') format('opentype'); font-weight: 200; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-Light.otf') format('opentype'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-Light-Italic.otf') format('opentype'); font-weight: 300; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-Italic.otf') format('opentype'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-Medium.otf') format('opentype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-Medium-Italic.otf') format('opentype'); font-weight: 500; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-SemiBold.otf') format('opentype'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-SemiBold-Italic.otf') format('opentype'); font-weight: 600; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-Bold-Italic.otf') format('opentype'); font-weight: 700; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-ExtraBold.otf') format('opentype'); font-weight: 800; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-ExtraBold-Italic.otf') format('opentype'); font-weight: 800; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-Black.otf') format('opentype'); font-weight: 900; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Segment Alt'; src: url('FONT%20SegmentALT/SegmentAlt-Black-Italic.otf') format('opentype'); font-weight: 900; font-style: italic; font-display: swap; }
+
+:root {
+  /* === BYCo palette === */
+  --bg: #e3e4ea;            /* page-header bg */
+  --bg-deep: #d7e1df;       /* sand */
+  --panel: #ffffff;         /* white surface */
+  --surface: #eef3f5;       /* primary light surface */
+  --surface-alt: #f4f4f4;   /* light grey */
+  --border: #e9eef0;        /* very subtle border */
+  --border-strong: #d7e1df; /* stronger border */
+  --ink: #000000;           /* heading / strong */
+  --ink-soft: #212529;      /* primary body */
+  --ink-muted: rgba(0, 0, 0, 0.55);
+  --ink-faint: rgba(0, 0, 0, 0.35);
+  --accent: #000000;        /* ink — primary CTA */
+  --accent-blue: #0052fe;   /* royal */
+  --accent-mint: #31c2a5;   /* pine-dark */
+  --accent-cream: #efebda;  /* sun-light */
+  --accent-sun: #fff4cb;    /* sun-bright */
+  --danger: #dc3545;
+  --danger-soft: #efebda;
+  --success: #00c378;
+  /* === BYCo radius scale === */
+  --radius-xs: 4px;         /* sm  .25rem */
+  --radius-sm: 8px;         /* lg  .5rem  */
+  --radius: 16px;           /* xl  1rem   */
+  --radius-lg: 24px;        /* between xl & xxl */
+  --radius-xl: 32px;        /* xxl 2rem   */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 4px 16px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 28px 60px rgba(0,0,0,0.12), 0 6px 16px rgba(0,0,0,0.06);
+  --font: 'Segment Alt', -apple-system, BlinkMacSystemFont, sans-serif;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* === BYCo type scale (font-size / line-height) === */
+  --fs-footnote: 12px;   --lh-footnote: 16px;
+  --fs-caption: 14px;    --lh-caption: 18px;
+  --fs-body: 18px;       --lh-body: 22px;
+  --fs-subtitle: 20px;   --lh-subtitle: 24px;
+  --fs-subtitle-lg: 24px;--lh-subtitle-lg: 32px;
+  --fs-h6: 32px;         --lh-h6: 36px;
+  --fs-h5: 40px;         --lh-h5: 48px;
+  --fs-h4: 48px;         --lh-h4: 56px;
+  --fs-h3: 64px;         --lh-h3: 76px;
+  --fs-h2: 72px;         --lh-h2: 80px;
+  --fs-headline: 84px;   --lh-headline: 92px;
+  --fs-h0: 120px;        --lh-h0: 132px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+*:focus { outline: none; }
+*:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
+
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: rgba(0, 0, 0, 0.75);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, button, select, textarea { font-family: inherit; }
+
+/* === LAB SHELL === */
+.lab { height: 100vh; display: grid; grid-template-rows: 56px 1fr; }
+
+.lab-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; background: var(--panel); border-bottom: 1px solid var(--border);
+}
+.lab-brand { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
+.lab-brand .sub { color: var(--ink-muted); font-weight: 400; margin-left: 4px; }
+.lab-actions { display: flex; gap: 8px; }
+.lab-btn {
+  height: 32px; padding: 0 14px; border-radius: 8px;
+  border: 1px solid var(--border-strong); background: var(--panel);
+  font-size: 12px; font-weight: 500; color: var(--ink-soft);
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all 0.15s var(--ease);
+}
+.lab-btn:hover { background: var(--surface-alt); color: var(--ink); }
+.lab-btn-primary { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+.lab-btn-primary:hover { background: #000; }
+
+.lab-stage {
+  display: grid; grid-template-columns: 260px 1fr 320px;
+  height: 100%; overflow: hidden;
+}
+
+/* === LEFT PANEL · FLOW === */
+.lab-flow {
+  background: var(--panel); border-right: 1px solid var(--border);
+  padding: 28px 22px; overflow-y: auto;
+}
+.lab-flow h4 {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--ink-muted); margin: 0 0 12px;
+}
+.lab-flow h4:not(:first-of-type) { margin-top: 28px; }
+.flow-step {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px; border-radius: var(--radius-sm); cursor: pointer;
+  transition: background 0.15s var(--ease); margin: 0 -10px;
+}
+.flow-step:hover, .flow-step.active { background: var(--surface-alt); }
+.flow-step .num {
+  width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%;
+  border: 1px solid var(--border-strong); background: var(--panel);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: var(--ink-muted); margin-top: 1px;
+}
+.flow-step.done .num { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+.flow-step.active .num { background: var(--panel); color: var(--ink); border-color: var(--ink); border-width: 2px; }
+.flow-step .text strong {
+  display: block; font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 2px;
+}
+.flow-step .text span { display: block; font-size: 12px; color: var(--ink-muted); line-height: 1.4; }
+
+.flow-jump { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+.flow-jump-btn {
+  text-align: left; padding: 8px 10px; border-radius: 8px;
+  font-size: 12px; color: var(--ink-soft); margin: 0 -10px;
+  width: calc(100% + 20px); transition: background 0.15s var(--ease);
+}
+.flow-jump-btn:hover { background: var(--surface-alt); color: var(--ink); }
+
+/* === CENTER · PHONE STAGE === */
+.phone-stage {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 24px; background: var(--bg);
+  overflow: auto; gap: 12px;
+}
+.phone-frame {
+  width: 392px; height: 800px; background: #1A1A1A; border-radius: 44px;
+  padding: 10px; box-shadow: var(--shadow-lg); position: relative; flex-shrink: 0;
+}
+.phone-frame::before {
+  content: ''; position: absolute; top: 18px; left: 50%;
+  transform: translateX(-50%); width: 110px; height: 28px;
+  background: #000; border-radius: 16px; z-index: 10;
+}
+.phone-screen {
+  width: 100%; height: 100%; background: var(--panel); border-radius: 32px;
+  overflow: hidden; position: relative; display: flex; flex-direction: column;
+}
+.phone-status {
+  flex-shrink: 0; height: 50px; display: flex; align-items: flex-end;
+  justify-content: space-between; padding: 0 28px 6px;
+  font-size: 14px; font-weight: 600; color: var(--ink);
+}
+.phone-status .right { display: flex; gap: 6px; align-items: center; }
+.phone-status .icon {
+  width: 16px; height: 11px; border: 1.2px solid var(--ink);
+  border-radius: 2px; position: relative;
+}
+.phone-status .icon::after {
+  content: ''; position: absolute; inset: 1.5px;
+  background: var(--ink); border-radius: 1px;
+}
+.phone-content { flex: 1; position: relative; overflow: hidden; }
+
+.screen {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease);
+  background: var(--panel);
+}
+.screen.active { opacity: 1; pointer-events: auto; }
+
+.screen-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+.screen-scroll::-webkit-scrollbar { width: 0; }
+
+/* === SCREEN 0 · WELCOME === */
+.welcome {
+  flex: 1; display: flex; flex-direction: column; padding: 28px; background: var(--panel);
+}
+.welcome-dark { background: #000000; color: rgba(255, 255, 255, 0.75); }
+.welcome-dark .welcome-mark { color: #ffffff; }
+.welcome-dark .welcome-mark .dot { color: rgba(255, 255, 255, 0.45); }
+.welcome-dark .welcome-headline { color: #ffffff; }
+.welcome-dark .welcome-sub { color: rgba(255, 255, 255, 0.75); }
+
+.welcome-mark {
+  font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+  margin-bottom: auto; padding-top: 8px;
+}
+.welcome-mark .dot { color: var(--ink-muted); font-weight: 400; }
+.welcome-art { margin: 24px auto 32px; width: 100%; max-width: 320px; height: 230px; position: relative; display: flex; align-items: center; justify-content: center; }
+.welcome-art svg { width: 100%; height: 100%; overflow: visible; }
+.welcome-headline {
+  font-size: 32px; font-weight: 700; line-height: 1.05;
+  letter-spacing: -0.02em; margin-bottom: 14px; color: var(--ink);
+}
+.welcome-sub {
+  font-size: 18px; line-height: 1.45;
+  margin-bottom: 32px; max-width: 320px;
+}
+.welcome-cta { margin-top: auto; }
+
+/* Buttons on dark surface */
+.btn-on-dark {
+  background: #ffffff; color: #000000;
+}
+.btn-on-dark:hover:not(:disabled) { background: #f1f1f1; }
+.btn-ghost-on-dark {
+  background: transparent; color: rgba(255, 255, 255, 0.75);
+  font-size: 14px; min-height: 40px; padding: 8px 16px; font-weight: 500;
+}
+.btn-ghost-on-dark:hover { color: #ffffff; }
+
+/* Headings & key UI keep full opacity (black) */
+.welcome-headline,
+.field-label,
+.itin-title,
+.duration-display,
+.save-headline,
+.choice-card-title,
+.activity-title,
+.lodging-info .name,
+.itin-meta-dest,
+.modal-title,
+.drawer-title,
+.lab-brand,
+.day-tab.active,
+.btn,
+.save-btn,
+.lab-btn,
+.text-input,
+.input-base,
+.suggestion-chip,
+.chip,
+.choice-card,
+.activity-time .h,
+.lodging-pill .name,
+.range-stepper button,
+.range-stepper .val,
+.welcome-mark,
+.profile-row .val,
+.insight-row .val,
+.modal-action,
+.day-section-title,
+.lodging-summary-title,
+.itin-surtitle,
+.field-mini-label {
+  color: var(--ink);
+}
+.welcome-dark .welcome-headline { color: #ffffff; }
+.welcome-dark .welcome-mark { color: #ffffff; }
+.choice-card.selected,
+.choice-card.selected .choice-card-title,
+.day-tab.active,
+.btn-primary,
+.btn-on-dark,
+.save-btn,
+.lab-btn-primary {
+  /* Override where bg is dark and text needs to be white */
+}
+.btn-primary, .save-btn { color: #ffffff; }
+.choice-card.selected, .choice-card.selected .choice-card-title { color: #ffffff; }
+.day-tab.active { color: #ffffff; }
+.lab-btn-primary { color: #ffffff; }
+
+/* === COMMON UI === */
+.btn {
+  width: 100%; min-height: 56px; padding: 14px 30px;
+  border-radius: 16px;
+  font-size: 18px; font-weight: 600; line-height: 1.4;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; transition: color .15s var(--ease), background-color .15s var(--ease), border-color .15s var(--ease);
+}
+.btn-primary { background: var(--ink); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: #1a1a1a; }
+.btn-primary:disabled { background: var(--surface); color: var(--ink-faint); cursor: not-allowed; }
+.btn-ghost { background: transparent; color: var(--ink-soft); font-size: 14px; min-height: 40px; padding: 8px 16px; font-weight: 500; }
+.btn-ghost:hover { color: var(--ink); }
+.btn-secondary { background: var(--surface); color: var(--ink); }
+.btn-secondary:hover { background: #e7eef0; }
+.btn-danger { background: transparent; color: var(--danger); font-size: 14px; font-weight: 600; min-height: 44px; padding: 8px 16px; }
+.btn-danger:hover { background: rgba(220, 53, 69, 0.08); }
+
+.screen-header {
+  flex-shrink: 0; padding: 8px 24px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink); transition: background 0.15s var(--ease); flex-shrink: 0;
+}
+.icon-btn:hover { background: var(--surface-alt); }
+.icon-btn svg { width: 20px; height: 20px; }
+
+.step-label { font-size: 12px; font-weight: 500; color: var(--ink-muted); letter-spacing: 0.02em; }
+.step-progress {
+  flex: 1; height: 3px; background: var(--surface-alt);
+  border-radius: 2px; overflow: hidden;
+}
+.step-progress-fill {
+  height: 100%; background: var(--ink); border-radius: 2px;
+  transition: width 0.4s var(--ease);
+}
+.screen-body { padding: 8px 24px 32px; flex: 1; }
+
+.field-label {
+  display: block; font-size: 24px; font-weight: 700;
+  letter-spacing: -0.01em; color: var(--ink); margin-bottom: 16px; line-height: 1.15;
+}
+.text-input {
+  width: 100%; height: 56px; padding: 0 18px;
+  border: 1.5px solid var(--border); border-radius: 16px; background: var(--surface);
+  font-size: 18px; color: var(--ink); transition: all 0.15s var(--ease);
+}
+.text-input::placeholder { color: var(--ink-faint); }
+.text-input:focus { border-color: var(--ink); background: var(--panel); }
+.suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.suggestion-chip {
+  padding: 7px 12px; border-radius: 24px; background: var(--surface-alt);
+  font-size: 12px; color: var(--ink-soft); border: 1px solid transparent;
+  transition: all 0.15s var(--ease);
+}
+.suggestion-chip:hover { background: var(--panel); border-color: var(--ink-soft); color: var(--ink); }
+
+.duration-block { margin-top: 36px; }
+.duration-display {
+  font-size: 48px; font-weight: 700; letter-spacing: -0.02em;
+  color: var(--ink); margin: 6px 0 18px; line-height: 1.05;
+}
+.duration-display .unit { font-size: 18px; font-weight: 500; color: var(--ink-muted); margin-left: 6px; }
+.slider {
+  width: 100%; -webkit-appearance: none; appearance: none;
+  height: 4px; background: var(--surface-alt); border-radius: 2px;
+  outline: none; position: relative;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 24px; height: 24px;
+  border-radius: 50%; background: var(--ink); cursor: grab;
+  border: 3px solid var(--panel); box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.slider::-moz-range-thumb {
+  width: 24px; height: 24px; border-radius: 50%; background: var(--ink); cursor: grab;
+  border: 3px solid var(--panel); box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.slider-marks {
+  display: flex; justify-content: space-between;
+  font-size: 12px; color: var(--ink-faint); margin-top: 10px;
+}
+
+/* === STEP 2/3 · CHOICES === */
+.choice-group { margin-bottom: 24px; }
+.choice-group-label {
+  font-size: 12px; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--ink-muted);
+  margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.choice-group-label .num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--surface-alt); display: flex;
+  align-items: center; justify-content: center;
+  color: var(--ink); font-size: 12px; font-weight: 600;
+  letter-spacing: 0; text-transform: none;
+}
+.choice-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.choice-card {
+  border: 1.5px solid var(--border); background: var(--surface);
+  border-radius: 16px; padding: 14px; text-align: left;
+  transition: all 0.15s var(--ease); display: flex;
+  flex-direction: column; gap: 4px; min-height: 96px;
+}
+.choice-card:hover { border-color: var(--ink-muted); background: var(--panel); }
+.choice-card.selected { background: var(--ink); border-color: var(--ink); color: var(--panel); }
+.choice-card-glyph { width: 22px; height: 22px; margin-bottom: 4px; opacity: 0.85; }
+.choice-card-title { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+.choice-card-desc { font-size: 12px; color: var(--ink-muted); line-height: 1.35; }
+.choice-card.selected .choice-card-desc { color: rgba(255,255,255,0.7); }
+
+.screen-footer {
+  flex-shrink: 0; padding: 16px 24px 28px;
+  background: linear-gradient(to top, var(--panel) 60%, rgba(255,255,255,0));
+  position: relative; z-index: 5;
+}
+
+/* === GENERATING === */
+.generating {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 28px; text-align: center; gap: 28px;
+}
+.generating-orb {
+  width: 80px; height: 80px; border-radius: 50%;
+  border: 2px solid var(--surface-alt); border-top-color: var(--ink);
+  animation: spin 1.1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.generating-text { font-size: 18px; color: var(--ink); font-weight: 500; }
+.generating-sub { font-size: 14px; color: var(--ink-muted); max-width: 280px; }
+
+/* === ITINERARY === BYCo page-header style */
+.itin-hero {
+  flex-shrink: 0;
+  background: var(--bg-deep);
+  padding: 18px 24px 28px;
+  position: relative;
+}
+.itin-hero-photo {
+  min-height: 300px;
+  padding: 18px 24px 28px;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+.itin-hero-bg {
+  position: absolute; inset: 0;
+  z-index: 0;
+  background: #1a1a1a;
+}
+.itin-hero-bg img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.4s var(--ease);
+}
+.itin-hero-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(0, 0, 0, 0.30);
+}
+.itin-hero-photo > :not(.itin-hero-bg) {
+  position: relative;
+  z-index: 1;
+}
+.itin-hero-photo .itin-surtitle { color: rgba(255, 255, 255, 0.85); }
+.itin-hero-photo .itin-surtitle-line { background: rgba(255, 255, 255, 0.7); opacity: 1; }
+.itin-hero-photo .itin-title { color: #ffffff; }
+.itin-hero-photo .itin-sub { color: rgba(255, 255, 255, 0.85); }
+.itin-hero-photo .icon-btn-soft {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.itin-hero-photo .icon-btn-soft:hover { background: rgba(255, 255, 255, 0.28); }
+.itin-hero-actions {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 0 -8px 28px;
+}
+.icon-btn-soft {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.icon-btn-soft:hover { background: #fff; }
+.itin-hero-meta { padding-right: 12px; }
+.itin-surtitle {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-soft); margin-bottom: 14px;
+}
+.itin-surtitle-line {
+  display: inline-block; width: 24px; height: 1px;
+  background: var(--ink); opacity: 0.4;
+}
+.itin-title {
+  font-size: 40px; font-weight: 700; line-height: 1.05;
+  letter-spacing: -0.02em; color: var(--ink); margin: 0 0 8px;
+  text-wrap: balance;
+}
+.itin-sub {
+  font-size: 14px; color: var(--ink-soft); font-weight: 500;
+}
+
+.itin-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--panel);
+  -webkit-overflow-scrolling: touch;
+}
+.itin-scroll::-webkit-scrollbar { width: 0; }
+.day-tabs {
+  flex-shrink: 0; padding: 12px 24px; display: flex; gap: 6px;
+  overflow-x: auto; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 5;
+  background: var(--panel);
+}
+.day-tabs::-webkit-scrollbar { display: none; }
+.day-tab {
+  flex-shrink: 0; height: 36px; padding: 0 14px; border-radius: 16px;
+  font-size: 14px; font-weight: 500; color: var(--ink-soft);
+  background: var(--surface-alt); white-space: nowrap;
+  transition: all 0.15s var(--ease);
+}
+.day-tab.active { background: var(--ink); color: var(--panel); }
+.day-tab:hover:not(.active) { background: var(--bg-deep); }
+
+.day-content { padding: 16px 20px 32px; background: var(--panel); }
+
+.day-section-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--ink-soft);
+  margin: 18px 4px 10px;
+}
+.day-section-title::before {
+  content: ''; display: inline-block; width: 24px; height: 1px;
+  background: var(--ink); opacity: 0.4;
+}
+
+/* === ACTIVITY CARD WITH SWIPE === */
+.swipe-row {
+  position: relative; margin: 10px 0; border-radius: 24px;
+  overflow: hidden; touch-action: pan-y;
+}
+.swipe-row.dragging {
+  z-index: 30; box-shadow: var(--shadow-lg);
+  cursor: grabbing; transition: none !important;
+}
+.swipe-row.shifting { transition: transform 0.22s var(--ease); }
+.swipe-bg {
+  position: absolute; inset: 0; background: var(--danger);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; color: white; font-weight: 500; font-size: 14px;
+}
+.swipe-bg svg { width: 18px; height: 18px; }
+.swipe-bg .label { opacity: 0; transition: opacity 0.2s var(--ease); }
+.swipe-row.armed .swipe-bg .label { opacity: 1; }
+.swipe-content {
+  position: relative; background: var(--surface);
+  border-radius: 24px;
+  transform: translateX(0); transition: transform 0.2s var(--ease);
+  display: flex; gap: 14px; align-items: center; padding: 12px 6px 12px 12px;
+}
+.swipe-row:hover .swipe-content { background: #e7eef0; }
+.swipe-content.swiping { transition: none; }
+.activity-img {
+  width: 64px; height: 64px; border-radius: 16px;
+  overflow: hidden; flex-shrink: 0;
+  background: linear-gradient(135deg, #d7e1df, #afc2c0);
+  position: relative;
+}
+.activity-img img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.activity-time {
+  flex-shrink: 0; min-width: 50px;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.activity-time .h {
+  font-size: 12px; font-weight: 600; color: var(--ink);
+  background: var(--surface-alt); padding: 4px 8px; border-radius: 8px;
+  letter-spacing: 0.02em;
+}
+.activity-time .d { font-size: 12px; color: var(--ink-muted); }
+.activity-body { flex: 1; min-width: 0; }
+.activity-type {
+  font-size: 12px; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--ink-muted); margin-bottom: 3px;
+}
+.activity-title {
+  font-size: 14px; font-weight: 600; color: var(--ink);
+  letter-spacing: -0.005em; line-height: 1.3; margin-bottom: 2px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.activity-loc {
+  font-size: 12px; color: var(--ink-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.drag-handle {
+  flex-shrink: 0; width: 30px; height: 64px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-faint); cursor: grab; touch-action: none;
+  user-select: none;
+}
+.drag-handle:hover { color: var(--ink-soft); }
+.drag-handle:active { cursor: grabbing; }
+.drag-handle svg { width: 16px; height: 16px; pointer-events: none; }
+
+.add-activity {
+  margin-top: 10px; width: 100%; height: 44px;
+  border: 1.5px dashed var(--border-strong); border-radius: 16px;
+  background: transparent; font-size: 14px; font-weight: 500; color: var(--ink-soft);
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all 0.15s var(--ease);
+}
+.add-activity:hover { border-color: var(--ink); color: var(--ink); background: var(--surface); }
+.add-activity svg { width: 14px; height: 14px; }
+
+/* === LODGING === */
+.lodging-summary {
+  flex-shrink: 0;
+  padding: 18px 24px 16px;
+  background: var(--panel);
+}
+.lodging-summary-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--ink-soft); margin-bottom: 10px;
+}
+.lodging-summary-title::before {
+  content: ''; display: inline-block; width: 24px; height: 1px;
+  background: var(--ink); opacity: 0.4;
+}
+.lodging-strip {
+  display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;
+}
+.lodging-strip::-webkit-scrollbar { display: none; }
+.lodging-pill {
+  flex-shrink: 0; padding: 8px 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: var(--surface); cursor: pointer;
+  transition: all 0.15s var(--ease); min-width: 0;
+  display: flex; align-items: center; gap: 8px;
+}
+.lodging-pill:hover { border-color: var(--ink-muted); background: var(--panel); }
+.lodging-pill.active { border-color: var(--ink); background: var(--panel); }
+.lodging-pill .nights {
+  font-size: 12px; font-weight: 600; color: var(--ink-muted);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.lodging-pill .name {
+  font-size: 12px; font-weight: 500; color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.lodging-card {
+  margin: 12px 0 6px; background: var(--accent-cream);
+  border-radius: 24px;
+  overflow: hidden; cursor: pointer;
+  transition: all 0.15s var(--ease);
+}
+.lodging-card:hover { background: #ebe6d3; }
+.lodging-img {
+  width: 100%; height: 160px; background: var(--surface-alt);
+  position: relative; overflow: hidden;
+}
+.lodging-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lodging-night-badge {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(255,255,255,0.94); backdrop-filter: blur(6px);
+  padding: 4px 10px; border-radius: 16px;
+  font-size: 12px; font-weight: 600; color: var(--ink);
+}
+.lodging-edit-badge {
+  position: absolute; top: 10px; right: 10px;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(255,255,255,0.94); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink);
+}
+.lodging-edit-badge svg { width: 14px; height: 14px; }
+.lodging-info { padding: 12px 14px 14px; }
+.lodging-info .name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.lodging-info .meta {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 12px; color: var(--ink-muted);
+}
+.lodging-info .price { font-size: 14px; font-weight: 600; color: var(--ink); }
+.lodging-info .price-unit { font-size: 12px; color: var(--ink-muted); font-weight: 400; }
+
+/* === SAVE STRIP === */
+.save-strip {
+  flex-shrink: 0; padding: 14px 20px 20px;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+}
+.save-btn {
+  width: 100%; min-height: 56px; padding: 14px 24px;
+  border-radius: 16px;
+  font-size: 18px; font-weight: 600; line-height: 1.4;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  background: var(--ink); color: var(--panel);
+  transition: all 0.15s var(--ease);
+}
+.save-btn:hover { background: #000; }
+.save-btn.saved { background: var(--success); }
+.save-btn svg { width: 16px; height: 16px; }
+
+/* === MODAL · BOTTOM SHEET (questions) === */
+.sheet {
+  position: absolute; left: 12px; right: 12px; bottom: 12px;
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 16px; padding: 18px; box-shadow: var(--shadow-lg);
+  z-index: 25; transform: translateY(120%);
+  transition: transform 0.4s var(--ease);
+}
+.sheet.show { transform: translateY(0); }
+.sheet-handle {
+  width: 36px; height: 4px; background: var(--border-strong);
+  border-radius: 2px; margin: -2px auto 14px;
+}
+.sheet-label {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--ink-muted); margin-bottom: 8px;
+}
+.sheet-title { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; margin-bottom: 6px; }
+.sheet-body { font-size: 14px; color: var(--ink-soft); line-height: 1.5; margin-bottom: 14px; }
+.sheet-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.sheet-actions .btn { height: 40px; font-size: 14px; flex: 1; min-width: 0; }
+.sheet-skip { width: 100%; text-align: center; margin-top: 10px; font-size: 12px; color: var(--ink-muted); padding: 4px; }
+.sheet-skip:hover { color: var(--ink); }
+
+/* === MODAL · FULL (edit, lodging, save) === */
+.modal-bg {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+  z-index: 60; opacity: 0; pointer-events: none;
+  transition: opacity 0.25s var(--ease);
+}
+.modal-bg.show { opacity: 1; pointer-events: auto; }
+.modal {
+  position: absolute; inset: 0; background: var(--panel);
+  z-index: 70; display: flex; flex-direction: column;
+  transform: translateY(100%); transition: transform 0.35s var(--ease);
+  border-radius: 32px 32px 0 0;
+  overflow: hidden;
+}
+.modal.show { transform: translateY(0); }
+.modal-header {
+  flex-shrink: 0; padding: 14px 18px;
+  display: grid; grid-template-columns: 36px 1fr auto;
+  align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title { font-size: 14px; font-weight: 600; text-align: center; letter-spacing: -0.01em; }
+.modal-action {
+  font-size: 14px; font-weight: 600; color: var(--ink);
+  padding: 6px 12px; border-radius: 8px;
+  transition: background 0.15s var(--ease);
+}
+.modal-action:hover { background: var(--surface-alt); }
+.modal-action:disabled { color: var(--ink-faint); cursor: not-allowed; }
+.modal-body { flex: 1; overflow-y: auto; padding: 16px 20px 24px; }
+.modal-body::-webkit-scrollbar { width: 0; }
+.modal-footer {
+  flex-shrink: 0; padding: 12px 18px;
+  border-top: 1px solid var(--border);
+}
+
+/* Edit modal fields */
+.field { margin-bottom: 18px; }
+.field-mini-label {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--ink-muted);
+  margin-bottom: 6px; display: block;
+}
+.input-base {
+  width: 100%; padding: 10px 14px;
+  border: 1.5px solid var(--border); border-radius: 16px;
+  background: var(--surface); font-size: 14px; color: var(--ink);
+  transition: all 0.15s var(--ease);
+}
+.input-base:focus { border-color: var(--ink); background: var(--panel); }
+.input-time { font-variant-numeric: tabular-nums; font-weight: 500; height: 44px; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  padding: 8px 12px; border-radius: 8px;
+  background: var(--surface-alt); border: 1.5px solid transparent;
+  font-size: 14px; color: var(--ink-soft);
+  transition: all 0.15s var(--ease);
+}
+.chip:hover { background: var(--panel); border-color: var(--border); }
+.chip.active { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+.duration-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.duration-grid .chip { text-align: center; padding: 10px; font-weight: 500; }
+
+.notice {
+  background: var(--surface-alt); border: 1px dashed var(--border-strong);
+  border-radius: 8px; padding: 10px 12px; margin-top: 10px;
+  font-size: 12px; color: var(--ink-soft); line-height: 1.4;
+}
+.notice strong { color: var(--ink); font-weight: 600; }
+
+/* Lodging modal */
+.lodging-range { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.range-stepper {
+  display: flex; align-items: center; gap: 4px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 4px;
+}
+.range-stepper button {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink); font-size: 18px; line-height: 1;
+}
+.range-stepper button:hover { background: var(--surface-alt); }
+.range-stepper button:disabled { color: var(--ink-faint); cursor: not-allowed; }
+.range-stepper .val {
+  min-width: 32px; text-align: center; font-size: 14px; font-weight: 600;
+}
+.hotel-list { display: flex; flex-direction: column; gap: 10px; }
+.hotel-card {
+  border: 1.5px solid var(--border); border-radius: 16px;
+  overflow: hidden; cursor: pointer; background: var(--panel);
+  transition: all 0.15s var(--ease);
+}
+.hotel-card:hover { border-color: var(--border-strong); }
+.hotel-card.selected { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+.hotel-card-img { width: 100%; height: 110px; background: var(--surface-alt); }
+.hotel-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hotel-card-info { padding: 10px 12px 12px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.hotel-card-info .name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.hotel-card-info .type { font-size: 12px; color: var(--ink-muted); }
+.hotel-card-info .price { font-size: 14px; font-weight: 600; flex-shrink: 0; }
+.hotel-card-info .price-unit { font-size: 12px; color: var(--ink-muted); font-weight: 400; }
+
+/* Save modal */
+.save-headline { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.15; margin-bottom: 8px; }
+.save-sub { font-size: 14px; color: var(--ink-soft); margin-bottom: 24px; line-height: 1.45; }
+.save-summary {
+  background: var(--surface-alt); border-radius: 16px; padding: 14px;
+  margin-bottom: 22px; display: flex; gap: 12px; align-items: center;
+}
+.save-summary-glyph {
+  width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0;
+  background: var(--ink); color: var(--panel);
+  display: flex; align-items: center; justify-content: center;
+}
+.save-summary-glyph svg { width: 18px; height: 18px; }
+.save-summary-info { flex: 1; min-width: 0; }
+.save-summary-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.save-summary-sub { font-size: 12px; color: var(--ink-muted); }
+
+.save-success {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 40px 20px;
+}
+.save-success-orb {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: var(--success); color: white;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 16px;
+}
+.save-success-orb svg { width: 28px; height: 28px; }
+
+/* === DRAWER (profile) === */
+.drawer-backdrop {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s var(--ease); z-index: 30;
+}
+.drawer-backdrop.show { opacity: 1; pointer-events: auto; }
+.drawer {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 88%; background: var(--panel); z-index: 40;
+  transform: translateX(100%); transition: transform 0.35s var(--ease);
+  display: flex; flex-direction: column;
+}
+.drawer.show { transform: translateX(0); }
+.drawer-header {
+  flex-shrink: 0; padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.drawer-title { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+.drawer-body { flex: 1; overflow-y: auto; padding: 18px 20px 30px; }
+.drawer-section { margin-bottom: 24px; }
+.drawer-section-title {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--ink-muted); margin-bottom: 10px;
+}
+.profile-row {
+  display: flex; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+}
+.profile-row:last-child { border-bottom: none; }
+.profile-row .key { color: var(--ink-muted); }
+.profile-row .val { color: var(--ink); font-weight: 500; }
+.profile-row .val.empty { color: var(--ink-faint); font-style: italic; font-weight: 400; }
+
+/* === RIGHT PANEL === */
+.lab-insight {
+  background: var(--panel); border-left: 1px solid var(--border);
+  padding: 28px 22px; overflow-y: auto;
+}
+.lab-insight h4 {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--ink-muted); margin: 0 0 10px;
+}
+.lab-insight h4:not(:first-of-type) { margin-top: 28px; }
+.lab-insight-intro { font-size: 12px; color: var(--ink-muted); line-height: 1.5; margin-bottom: 22px; }
+.insight-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 12px; padding: 8px 0; border-bottom: 1px dashed var(--border);
+  gap: 10px;
+}
+.insight-row:last-child { border-bottom: none; }
+.insight-row .key { color: var(--ink-muted); flex-shrink: 0; }
+.insight-row .val { color: var(--ink); font-weight: 500; max-width: 60%; text-align: right; }
+.insight-row .val.empty { color: var(--ink-faint); font-style: italic; font-weight: 400; }
+
+.insight-tag {
+  display: inline-block; padding: 3px 8px; border-radius: 4px;
+  background: var(--surface-alt); color: var(--ink);
+  font-size: 12px; font-weight: 500; margin: 2px 0 2px 4px;
+}
+.insight-tag.fresh { background: var(--ink); color: var(--panel); animation: tag-pulse 1.5s var(--ease); }
+@keyframes tag-pulse {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.insight-event {
+  font-size: 12px; color: var(--ink-soft);
+  padding: 8px 0; border-bottom: 1px dashed var(--border);
+  display: flex; gap: 8px;
+}
+.insight-event:last-child { border-bottom: none; }
+.insight-event .ts {
+  font-variant-numeric: tabular-nums; color: var(--ink-faint);
+  flex-shrink: 0; width: 38px; font-size: 12px;
+}
+.insight-event .msg { flex: 1; line-height: 1.4; }
+.insight-event.new .msg { color: var(--ink); font-weight: 500; }
+
+.insight-empty { font-size: 12px; color: var(--ink-faint); font-style: italic; padding: 8px 0; }
+
+/* === RESPONSIVE === */
+@media (max-width: 1280px) {
+  .lab-stage { grid-template-columns: 220px 1fr 280px; }
+  .lab-flow, .lab-insight { padding: 20px 16px; }
+}
+@media (max-width: 980px) {
+  .lab-stage { grid-template-columns: 1fr; }
+  .lab-flow, .lab-insight { display: none; }
+  .phone-stage { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="lab">
+
+  <header class="lab-header">
+    <div class="lab-brand">WanderMind <span class="sub">— Prototype Flow B</span></div>
+    <div class="lab-actions">
+      <button class="lab-btn" id="btn-stress" title="Déclencher une question contextuelle">Stress test</button>
+      <button class="lab-btn" id="btn-reset">Réinitialiser</button>
+    </div>
+  </header>
+
+  <div class="lab-stage">
+
+    <!-- LEFT · FLOW -->
+    <aside class="lab-flow">
+      <h4>Phase 1 · Profil minimal</h4>
+      <div class="flow-step" data-flow="welcome">
+        <div class="num">0</div>
+        <div class="text"><strong>Accueil</strong><span>Promesse · 1 minute</span></div>
+      </div>
+      <div class="flow-step" data-flow="step1">
+        <div class="num">1</div>
+        <div class="text"><strong>Où & combien</strong><span>Destination + durée</span></div>
+      </div>
+      <div class="flow-step" data-flow="step2">
+        <div class="num">2</div>
+        <div class="text"><strong>Trois choix</strong><span>Rythme · Ambiance · Découverte</span></div>
+      </div>
+      <div class="flow-step" data-flow="step3">
+        <div class="num">3</div>
+        <div class="text"><strong>Trois choix</strong><span>Compagnie · Budget · Hébergement</span></div>
+      </div>
+      <div class="flow-step" data-flow="itinerary">
+        <div class="num">4</div>
+        <div class="text"><strong>Premier itinéraire</strong><span>Génération immédiate</span></div>
+      </div>
+
+      <h4>Phase 2 · Enrichissement</h4>
+      <div class="flow-step" data-flow="phase2-edit">
+        <div class="num">5</div>
+        <div class="text"><strong>Retours implicites</strong><span>Édition · swipe · drag</span></div>
+      </div>
+      <div class="flow-step" data-flow="phase2-q">
+        <div class="num">6</div>
+        <div class="text"><strong>Question ponctuelle</strong><span>Apparition contextuelle</span></div>
+      </div>
+      <div class="flow-step" data-flow="phase2-c">
+        <div class="num">7</div>
+        <div class="text"><strong>Contraintes au fil</strong><span>Budget, hébergement…</span></div>
+      </div>
+
+      <div class="flow-jump">
+        <h4 style="margin-top: 0;">Sauter à</h4>
+        <button class="flow-jump-btn" data-jump="welcome">→ Accueil</button>
+        <button class="flow-jump-btn" data-jump="step1">→ Étape 1</button>
+        <button class="flow-jump-btn" data-jump="step2">→ Étape 2</button>
+        <button class="flow-jump-btn" data-jump="step3">→ Étape 3</button>
+        <button class="flow-jump-btn" data-jump="itinerary">→ Itinéraire généré</button>
+      </div>
+    </aside>
+
+    <!-- CENTER · PHONE -->
+    <div class="phone-stage">
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-status">
+            <span>9:41</span>
+            <div class="right">
+              <span style="font-size: 12px;">●●●●</span>
+              <span class="icon"></span>
+            </div>
+          </div>
+          <div class="phone-content" id="phone-content">
+
+            <!-- WELCOME -->
+            <section class="screen active" data-screen="welcome">
+              <div class="welcome welcome-dark">
+                <div class="welcome-mark">WanderMind <span class="dot">·</span> beta</div>
+                <div class="welcome-art"></div>
+                <h1 class="welcome-headline">Ton premier itinéraire en une minute.</h1>
+                <p class="welcome-sub">On précisera tes envies plus tard, ensemble. Pour l'instant, on garde l'essentiel.</p>
+                <div class="welcome-cta">
+                  <button class="btn btn-on-dark" data-go="step1">Commencer</button>
+                  <button class="btn btn-ghost-on-dark" style="margin-top: 4px;">Déjà un compte ? Se connecter</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- STEP 1 · DESTINATION + DURATION -->
+            <section class="screen" data-screen="step1">
+              <div class="screen-header">
+                <button class="icon-btn" data-go="welcome" aria-label="Retour">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <span class="step-label">Étape 1 / 3</span>
+                <div class="step-progress"><div class="step-progress-fill" style="width: 33%"></div></div>
+              </div>
+              <div class="screen-scroll">
+                <div class="screen-body">
+                  <label class="field-label" for="dest-input">Tu pars où ?</label>
+                  <input type="text" class="text-input" id="dest-input" placeholder="Une ville, un pays, une région…" autocomplete="off">
+                  <div class="suggestions">
+                    <button class="suggestion-chip" data-dest="Lisbonne">Lisbonne</button>
+                    <button class="suggestion-chip" data-dest="Tokyo">Tokyo</button>
+                    <button class="suggestion-chip" data-dest="Marrakech">Marrakech</button>
+                    <button class="suggestion-chip" data-dest="Mexico">Mexico</button>
+                    <button class="suggestion-chip" data-dest="Édimbourg">Édimbourg</button>
+                  </div>
+
+                  <div class="duration-block">
+                    <label class="field-label">Pour combien de jours ?</label>
+                    <div class="duration-display">
+                      <span id="duration-val">4</span><span class="unit">jours</span>
+                    </div>
+                    <input type="range" class="slider" id="duration-input" min="2" max="14" value="4">
+                    <div class="slider-marks">
+                      <span>2 j</span><span>7 j</span><span>14 j</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="screen-footer">
+                <button class="btn btn-primary" id="btn-step1-next" disabled>Continuer</button>
+              </div>
+            </section>
+
+            <!-- STEP 2 · ESSENTIALS -->
+            <section class="screen" data-screen="step2">
+              <div class="screen-header">
+                <button class="icon-btn" data-go="step1" aria-label="Retour">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <span class="step-label">Étape 2 / 3</span>
+                <div class="step-progress"><div class="step-progress-fill" style="width: 66%"></div></div>
+              </div>
+              <div class="screen-scroll">
+                <div class="screen-body">
+                  <h2 class="field-label" style="margin-bottom: 6px;">L'essentiel d'abord.</h2>
+                  <p style="color: var(--ink-muted); font-size: 14px; margin-bottom: 24px; line-height: 1.5;">Trois choix, le reste vient ensuite.</p>
+
+                  <div class="choice-group">
+                    <div class="choice-group-label"><span class="num">1</span> Rythme</div>
+                    <div class="choice-pair">
+                      <button class="choice-card" data-choice="rhythm" data-value="calm">
+                        <svg class="choice-card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 12 H 21" stroke-linecap="round"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg>
+                        <div class="choice-card-title">Tranquille</div>
+                        <div class="choice-card-desc">Du temps pour flâner, pas de course.</div>
+                      </button>
+                      <button class="choice-card" data-choice="rhythm" data-value="intense">
+                        <svg class="choice-card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 12 H 21" stroke-linecap="round"/><circle cx="5" cy="12" r="1.5"/><circle cx="10" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+                        <div class="choice-card-title">Soutenu</div>
+                        <div class="choice-card-desc">On enchaîne les découvertes.</div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="choice-group">
+                    <div class="choice-group-label"><span class="num">2</span> Ambiance</div>
+                    <div class="choice-pair">
+                      <button class="choice-card" data-choice="vibe" data-value="popular">
+                        <svg class="choice-card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+                        <div class="choice-card-title">Incontournables</div>
+                        <div class="choice-card-desc">Les lieux qu'on cite forcément.</div>
+                      </button>
+                      <button class="choice-card" data-choice="vibe" data-value="hidden">
+                        <svg class="choice-card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 12 Q 8 6 12 12 T 21 12" stroke-linecap="round"/></svg>
+                        <div class="choice-card-title">Coins discrets</div>
+                        <div class="choice-card-desc">Hors des circuits balisés.</div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="choice-group">
+                    <div class="choice-group-label"><span class="num">3</span> Découverte</div>
+                    <div class="choice-pair">
+                      <button class="choice-card" data-choice="discovery" data-value="culture">
+                        <svg class="choice-card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 20 V 10 L12 4 L20 10 V 20"/><path d="M4 20 H 20"/><path d="M10 20 V 14 H 14 V 20"/></svg>
+                        <div class="choice-card-title">Culture &amp; patrimoine</div>
+                        <div class="choice-card-desc">Musées, monuments, histoire.</div>
+                      </button>
+                      <button class="choice-card" data-choice="discovery" data-value="food">
+                        <svg class="choice-card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="13" r="7"/><path d="M9 5 V 11"/><path d="M15 5 V 11"/></svg>
+                        <div class="choice-card-title">Saveurs &amp; marchés</div>
+                        <div class="choice-card-desc">Tables locales, étals, dégustations.</div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="screen-footer">
+                <button class="btn btn-primary" id="btn-step2-next" disabled>Continuer</button>
+              </div>
+            </section>
+
+            <!-- STEP 3 · PRACTICAL -->
+            <section class="screen" data-screen="step3">
+              <div class="screen-header">
+                <button class="icon-btn" data-go="step2" aria-label="Retour">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <span class="step-label">Étape 3 / 3</span>
+                <div class="step-progress"><div class="step-progress-fill" style="width: 100%"></div></div>
+              </div>
+              <div class="screen-scroll">
+                <div class="screen-body">
+                  <h2 class="field-label" style="margin-bottom: 6px;">Trois précisions utiles.</h2>
+                  <p style="color: var(--ink-muted); font-size: 14px; margin-bottom: 24px; line-height: 1.5;">Pour qu'on tape plus juste dès le premier itinéraire.</p>
+
+                  <div class="choice-group">
+                    <div class="choice-group-label"><span class="num">4</span> Avec qui</div>
+                    <div class="choice-pair">
+                      <button class="choice-card" data-choice="company" data-value="duo">
+                        <svg class="choice-card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="9" cy="9" r="3"/><circle cx="15" cy="9" r="3"/><path d="M5 19 c 0 -2.8 1.8 -5 4 -5 s 4 2.2 4 5"/><path d="M11 19 c 0 -2.8 1.8 -5 4 -5 s 4 2.2 4 5"/></svg>
+                        <div class="choice-card-title">Solo ou duo</div>
+                        <div class="choice-card-desc">Tables intimes, lieux feutrés.</div>
+                      </button>
+                      <button class="choice-card" data-choice="company" data-value="group">
+                        <svg class="choice-card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6" cy="9" r="2.5"/><circle cx="12" cy="9" r="2.5"/><circle cx="18" cy="9" r="2.5"/><path d="M2 19 c 0 -2.5 1.6 -4.5 4 -4.5 s 4 2 4 4.5"/><path d="M8 19 c 0 -2.5 1.6 -4.5 4 -4.5 s 4 2 4 4.5"/><path d="M14 19 c 0 -2.5 1.6 -4.5 4 -4.5 s 4 2 4 4.5"/></svg>
+                        <div class="choice-card-title">En groupe</div>
+                        <div class="choice-card-desc">Adresses conviviales, tablées.</div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="choice-group">
+                    <div class="choice-group-label"><span class="num">5</span> Budget</div>
+                    <div class="choice-pair">
+                      <button class="choice-card" data-choice="budget" data-value="measured">
+                        <svg class="choice-card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 17 L 8 12 L 13 14 L 21 6"/><path d="M16 6 H 21 V 11"/></svg>
+                        <div class="choice-card-title">Mesuré</div>
+                        <div class="choice-card-desc">On reste raisonnable, ~ 100 €/nuit.</div>
+                      </button>
+                      <button class="choice-card" data-choice="budget" data-value="free">
+                        <svg class="choice-card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 7 L 9 13 L 13 9 L 21 17"/><path d="M16 17 H 21 V 12"/></svg>
+                        <div class="choice-card-title">Confortable</div>
+                        <div class="choice-card-desc">Le confort prime, jusqu'à 300 €/nuit.</div>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="choice-group">
+                    <div class="choice-group-label"><span class="num">6</span> Hébergement préféré</div>
+                    <div class="choice-pair">
+                      <button class="choice-card" data-choice="lodging" data-value="hotel">
+                        <svg class="choice-card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 20 V 8 H 20 V 20"/><path d="M4 20 H 20"/><path d="M8 12 H 10"/><path d="M14 12 H 16"/><path d="M8 16 H 10"/><path d="M14 16 H 16"/></svg>
+                        <div class="choice-card-title">Hôtel</div>
+                        <div class="choice-card-desc">Standardisé, services, central.</div>
+                      </button>
+                      <button class="choice-card" data-choice="lodging" data-value="charm">
+                        <svg class="choice-card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 21 V 11 L 12 4 L 21 11 V 21"/><path d="M3 21 H 21"/><path d="M10 21 V 14 H 14 V 21"/></svg>
+                        <div class="choice-card-title">Maison de charme</div>
+                        <div class="choice-card-desc">Petite adresse, caractère, hôtes.</div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="screen-footer">
+                <button class="btn btn-primary" id="btn-step3-next" disabled>Génère mon itinéraire</button>
+              </div>
+            </section>
+
+            <!-- GENERATING -->
+            <section class="screen" data-screen="generating">
+              <div class="generating">
+                <div class="generating-orb"></div>
+                <div>
+                  <div class="generating-text">On compose ton premier itinéraire…</div>
+                  <div class="generating-sub" style="margin-top: 8px;">On part du minimum. Tout sera ajustable ensuite.</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ITINERARY -->
+            <section class="screen" data-screen="itinerary">
+              <div class="itin-scroll">
+                <header class="itin-hero itin-hero-photo">
+                  <div class="itin-hero-bg">
+                    <img id="dest-cover-img" src="" alt="" loading="lazy"
+                         onerror="this.dataset.fallback==='1' ? this.style.opacity=0 : (this.dataset.fallback='1', this.src=this.dataset.fallbackSrc)">
+                  </div>
+                  <div class="itin-hero-actions">
+                    <button class="icon-btn icon-btn-soft" id="btn-profile" title="Mon profil">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21 c 0 -4.4 3.6 -8 8 -8 s 8 3.6 8 8"/></svg>
+                    </button>
+                    <button class="icon-btn icon-btn-soft" id="btn-overview" title="Vue d'ensemble">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6 H 20"/><path d="M4 12 H 20"/><path d="M4 18 H 20"/></svg>
+                    </button>
+                  </div>
+                  <div class="itin-hero-meta">
+                    <div class="itin-surtitle"><span class="itin-surtitle-line"></span>Ton itinéraire</div>
+                    <h1 class="itin-title" id="itin-dest">Lisbonne</h1>
+                    <div class="itin-sub" id="itin-sub">4 jours</div>
+                  </div>
+                </header>
+
+                <div class="lodging-summary">
+                  <div class="lodging-summary-title">Hébergement</div>
+                  <div class="lodging-strip" id="lodging-strip"></div>
+                </div>
+
+                <div class="day-tabs" id="day-tabs"></div>
+                <div class="day-content" id="day-content"></div>
+              </div>
+
+              <div class="save-strip">
+                <button class="save-btn" id="btn-save">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                  <span id="save-btn-label">Enregistrer cet itinéraire</span>
+                </button>
+              </div>
+
+              <!-- Bottom sheet (contextual question) -->
+              <div class="sheet" id="sheet">
+                <div class="sheet-handle"></div>
+                <div class="sheet-label" id="sheet-label">Une question rapide</div>
+                <div class="sheet-title" id="sheet-title"></div>
+                <div class="sheet-body" id="sheet-body"></div>
+                <div class="sheet-actions" id="sheet-actions"></div>
+                <button class="sheet-skip" id="sheet-skip">Plus tard</button>
+              </div>
+
+              <!-- Profile drawer -->
+              <div class="drawer-backdrop" id="drawer-backdrop"></div>
+              <div class="drawer" id="drawer">
+                <div class="drawer-header">
+                  <div class="drawer-title">Mon profil</div>
+                  <button class="icon-btn" id="btn-close-drawer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                </div>
+                <div class="drawer-body" id="drawer-body"></div>
+              </div>
+
+              <!-- Modal: Edit activity -->
+              <div class="modal-bg" id="modal-edit-bg"></div>
+              <div class="modal" id="modal-edit">
+                <div class="modal-header">
+                  <button class="icon-btn" id="modal-edit-cancel">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                  <div class="modal-title">Modifier l'étape</div>
+                  <button class="modal-action" id="modal-edit-save">OK</button>
+                </div>
+                <div class="modal-body" id="modal-edit-body"></div>
+                <div class="modal-footer">
+                  <button class="btn-danger" id="modal-edit-delete">Supprimer cette étape</button>
+                </div>
+              </div>
+
+              <!-- Modal: Choose lodging -->
+              <div class="modal-bg" id="modal-lodging-bg"></div>
+              <div class="modal" id="modal-lodging">
+                <div class="modal-header">
+                  <button class="icon-btn" id="modal-lodging-cancel">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                  <div class="modal-title">Hébergement</div>
+                  <button class="modal-action" id="modal-lodging-save">OK</button>
+                </div>
+                <div class="modal-body" id="modal-lodging-body"></div>
+              </div>
+
+              <!-- Modal: Save / account -->
+              <div class="modal-bg" id="modal-save-bg"></div>
+              <div class="modal" id="modal-save">
+                <div class="modal-header">
+                  <button class="icon-btn" id="modal-save-cancel">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                  <div class="modal-title">Sauvegarder</div>
+                  <span></span>
+                </div>
+                <div class="modal-body" id="modal-save-body"></div>
+              </div>
+
+            </section>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT · INSIGHT -->
+    <aside class="lab-insight">
+      <div class="lab-insight-intro">
+        Ce panneau rend visible le profil que <strong>WanderMind apprend silencieusement</strong>. Il n'est pas affiché à l'utilisateur final.
+      </div>
+
+      <h4>Préférences explicites</h4>
+      <div id="insight-explicit"></div>
+
+      <h4>Comportement observé</h4>
+      <div id="insight-observed">
+        <div class="insight-empty">Rien encore. Édite l'itinéraire pour voir.</div>
+      </div>
+
+      <h4>Inférences</h4>
+      <div id="insight-inferred">
+        <div class="insight-empty">Aucune inférence pour l'instant.</div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ==============================
+ *  STATE
+ * ============================== */
+const state = {
+  screen: 'welcome',
+  destination: '',
+  duration: 4,
+  prefs: {
+    rhythm: null, vibe: null, discovery: null,
+    company: null, budget: null, lodging: null,
+  },
+  itinerary: [],
+  lodgingByNight: [],
+  hotelOptions: [],
+  activeDay: 0,
+  observed: { removed: {}, added: 0, moved: 0, edited: 0, total: 0 },
+  inferred: [],
+  events: [],
+  triggered: { lodging: false, manyEdits: false },
+  sheetQueue: [],
+  sheetActive: false,
+  editing: null,
+  lodgingEditing: null,
+  saved: false,
+  account: null,
+};
+
+/* ==============================
+ *  CONSTANTS
+ * ============================== */
+const TYPES = {
+  cafe:   { label: 'Café',          defaultDur: 45 },
+  walk:   { label: 'Promenade',     defaultDur: 60 },
+  museum: { label: 'Musée',         defaultDur: 90 },
+  lunch:  { label: 'Déjeuner',      defaultDur: 75 },
+  market: { label: 'Marché',        defaultDur: 60 },
+  view:   { label: 'Point de vue',  defaultDur: 45 },
+  dinner: { label: 'Dîner',         defaultDur: 90 },
+  shop:   { label: 'Boutique',      defaultDur: 45 },
+  show:   { label: 'Spectacle',     defaultDur: 120 },
+  spa:    { label: 'Bien-être',     defaultDur: 60 },
+};
+
+const HOTELS_BASE = [
+  { id: 'h-classic', name: 'Hôtel central',       type: 'Hôtel · 3 étoiles',     priceBase: 145, rating: '4,4', tag: 'hotel' },
+  { id: 'h-design',  name: 'Hôtel de design',     type: 'Hôtel · 4 étoiles',     priceBase: 220, rating: '4,6', tag: 'hotel' },
+  { id: 'h-charm',   name: 'Maison de charme',    type: "Maison d'hôtes",        priceBase: 180, rating: '4,7', tag: 'charm' },
+  { id: 'h-local',   name: 'Appartement local',   type: 'Logement entier',       priceBase: 110, rating: '4,5', tag: 'charm' },
+  { id: 'h-boutique',name: 'Boutique-hôtel',      type: 'Hôtel · boutique',      priceBase: 195, rating: '4,8', tag: 'charm' },
+];
+
+/* ==============================
+ *  HELPERS
+ * ============================== */
+function uid() { return Math.random().toString(36).slice(2, 9); }
+function parseTime(t) { const [h, m] = t.split(':').map(Number); return h * 60 + m; }
+function formatTime(min) {
+  min = Math.max(0, Math.min(min, 24 * 60 - 1));
+  const h = Math.floor(min / 60), m = min % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+function formatDur(min) {
+  if (min < 60) return `${min} min`;
+  const h = Math.floor(min / 60), m = min % 60;
+  return m === 0 ? `${h} h` : `${h} h ${m}`;
+}
+function imgUrl(seed, w = 240, h = 240) {
+  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${w}/${h}`;
+}
+function destPhotoUrl(destination, w = 800, h = 440) {
+  if (!destination) return '';
+  const tag = destination.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .trim().replace(/[\s'-]+/g, ',');
+  // Lock makes the result deterministic (same image for same destination)
+  let lock = 0;
+  for (let i = 0; i < destination.length; i++) {
+    lock = ((lock << 5) - lock) + destination.charCodeAt(i);
+    lock |= 0;
+  }
+  return `https://loremflickr.com/${w}/${h}/${encodeURIComponent(tag)}?lock=${Math.abs(lock)}`;
+}
+function pick(arr, seed) { return arr[Math.abs(seed) % arr.length]; }
+function neighborhood(di) {
+  return ['centre', 'quartier nord', 'vieille ville', 'rive ouest', 'haute-ville', 'rive est'][di % 6];
+}
+function truncate(s, n) { return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+
+/* ==============================
+ *  GENERATION
+ * ============================== */
+function generateItinerary(dest, days, prefs) {
+  const rhythm = prefs.rhythm || 'calm';
+  const vibe = prefs.vibe || 'popular';
+  const disc = prefs.discovery || 'culture';
+  const company = prefs.company || 'duo';
+  const perDay = rhythm === 'intense' ? 5 : 3;
+
+  const variants = {
+    cafe: vibe === 'hidden'
+      ? [`Café de quartier à ${dest}`, `Petite torréfaction locale`, `Comptoir matinal discret`]
+      : [`Café emblématique de ${dest}`, `Pâtisserie réputée`, `Brunch dans le centre`],
+    walk: vibe === 'hidden'
+      ? [`Quartier résidentiel peu touristique`, `Ruelles du vieux centre`, `Bord de fleuve à pied`]
+      : [`Promenade dans le centre historique`, `Esplanade principale`, `Avenue incontournable`],
+    museum: vibe === 'hidden'
+      ? [`Musée d'arts décoratifs`, `Maison-musée d'un auteur local`, `Petit musée d'archéologie`]
+      : [`Grand musée national`, `Musée d'art moderne`, `Galerie majeure`],
+    lunch: vibe === 'hidden'
+      ? [`Tasca de quartier`, `Bistro discret`, `Cantine locale`]
+      : [`Restaurant réputé du centre`, `Adresse signature`, `Table classée au guide`],
+    market: vibe === 'hidden'
+      ? [`Marché de quartier`, `Halle de producteurs`, `Petit marché matinal`]
+      : [`Grand marché de ${dest}`, `Halle centrale`, `Marché phare`],
+    view: vibe === 'hidden'
+      ? [`Belvédère secret`, `Toit-terrasse confidentiel`, `Point de vue local`]
+      : [`Mirador principal`, `Tour panoramique`, `Belvédère emblématique`],
+    dinner: company === 'group'
+      ? [`Tablée conviviale`, `Adresse à partager`, `Restaurant pour groupe`]
+      : (vibe === 'hidden'
+        ? [`Tasca avec habitués`, `Petite table familiale`, `Adresse de quartier`]
+        : [`Table classique renommée`, `Restaurant traditionnel`, `Adresse de référence`]),
+    shop: [`Boutique d'artisanat`, `Concept store local`, `Disquaire indépendant`],
+    show: company === 'group' ? [`Spectacle collectif`, `Soirée avec scène ouverte`] : [`Concert intimiste`, `Performance d'auteur`],
+    spa:  [`Bain traditionnel`, `Hammam local`, `Spa urbain`],
+  };
+
+  const dayTemplate = (di) => {
+    let slots = [];
+    if (disc === 'food') {
+      slots = [
+        { type: 'cafe',   time: '09:00' },
+        { type: 'market', time: '11:00' },
+        { type: 'lunch',  time: '13:30' },
+        { type: 'walk',   time: '16:00' },
+        { type: 'view',   time: '17:30' },
+        { type: 'dinner', time: '20:00' },
+      ];
+    } else {
+      slots = [
+        { type: 'cafe',   time: '09:00' },
+        { type: 'museum', time: '10:30' },
+        { type: 'walk',   time: '12:30' },
+        { type: 'lunch',  time: '13:30' },
+        { type: 'view',   time: '17:30' },
+        { type: 'dinner', time: '20:00' },
+      ];
+    }
+    slots = slots.slice(0, perDay);
+    return slots.map((s, idx) => {
+      const id = `d${di}-${idx}-${uid()}`;
+      return {
+        id,
+        type: s.type,
+        time: s.time,
+        duration: TYPES[s.type].defaultDur,
+        title: pick(variants[s.type], di * 7 + idx * 13),
+        loc: `${dest}, ${neighborhood(di)}`,
+        imgSeed: id,
+      };
+    });
+  };
+
+  return Array.from({ length: days }, (_, i) => ({
+    day: i + 1,
+    activities: dayTemplate(i),
+  }));
+}
+
+function generateHotelOptions(dest, prefs) {
+  const budget = prefs.budget || 'measured';
+  const lodgingPref = prefs.lodging || 'hotel';
+  const mult = budget === 'free' ? 1.4 : 0.85;
+  return HOTELS_BASE.map(h => ({
+    ...h,
+    name: `${h.name} · ${dest}`,
+    price: Math.round(h.priceBase * mult / 5) * 5,
+    imgSeed: `${h.id}-${dest.toLowerCase().replace(/\s/g, '')}`,
+    recommended: h.tag === lodgingPref,
+  }));
+}
+
+function pickInitialHotel(options, prefs) {
+  const lodgingPref = prefs.lodging || 'hotel';
+  return options.find(h => h.tag === lodgingPref) || options[0];
+}
+
+/* ==============================
+ *  TIME / OVERLAP
+ * ============================== */
+function resolveOverlaps(activities, anchorId) {
+  // Sort by current time. Push subsequent activities forward if overlap.
+  activities.sort((a, b) => parseTime(a.time) - parseTime(b.time));
+  for (let i = 1; i < activities.length; i++) {
+    const prev = activities[i - 1];
+    const cur  = activities[i];
+    const prevEnd = parseTime(prev.time) + prev.duration;
+    if (parseTime(cur.time) < prevEnd) {
+      cur.time = formatTime(prevEnd + 15);
+    }
+  }
+}
+
+/* ==============================
+ *  RENDERING · SCREENS
+ * ============================== */
+function showScreen(name) {
+  state.screen = name;
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.toggle('active', s.dataset.screen === name);
+  });
+  const map = {
+    welcome: 'welcome', step1: 'step1', step2: 'step2', step3: 'step3',
+    generating: 'step3', itinerary: 'itinerary',
+  };
+  document.querySelectorAll('.flow-step').forEach(el => {
+    const f = el.dataset.flow;
+    el.classList.toggle('active', f === map[name]);
+    el.classList.toggle('done', isFlowDone(f));
+  });
+}
+function isFlowDone(f) {
+  const order = ['welcome','step1','step2','step3','itinerary','phase2-edit','phase2-q','phase2-c'];
+  const cur = state.screen === 'generating' ? 'step3' : state.screen;
+  return order.indexOf(f) < order.indexOf(cur);
+}
+
+/* ==============================
+ *  RENDERING · ITINERARY
+ * ============================== */
+function renderItinerary() {
+  document.getElementById('itin-dest').textContent = state.destination;
+  const sub = [`${state.duration} jours`];
+  if (state.prefs.rhythm) sub.push(state.prefs.rhythm === 'calm' ? 'tranquille' : 'soutenu');
+  document.getElementById('itin-sub').textContent = sub.join(' · ');
+
+  // Cover photo for destination — tag-based via loremflickr, picsum fallback
+  const coverImg = document.getElementById('dest-cover-img');
+  if (coverImg && state.destination) {
+    coverImg.dataset.fallback = '0';
+    coverImg.dataset.fallbackSrc = imgUrl(`cover-${state.destination}`, 800, 440);
+    coverImg.src = destPhotoUrl(state.destination, 800, 440);
+    coverImg.alt = state.destination;
+    coverImg.style.opacity = '';
+  }
+
+  renderLodgingStrip();
+  renderDayTabs();
+  renderDay();
+}
+
+function renderDayTabs() {
+  const el = document.getElementById('day-tabs');
+  el.innerHTML = state.itinerary.map((d, i) =>
+    `<button class="day-tab ${i === state.activeDay ? 'active' : ''}" data-day="${i}">Jour ${d.day}</button>`
+  ).join('');
+  el.querySelectorAll('.day-tab').forEach(b => {
+    b.addEventListener('click', () => {
+      state.activeDay = +b.dataset.day;
+      el.querySelectorAll('.day-tab').forEach(x => x.classList.toggle('active', x === b));
+      renderDay();
+      renderLodgingStrip();
+    });
+  });
+}
+
+function renderLodgingStrip() {
+  const groups = coalesceLodging();
+  const el = document.getElementById('lodging-strip');
+  el.innerHTML = groups.map((g, i) => {
+    const hotel = state.hotelOptions.find(h => h.id === g.hotelId);
+    const isCurrent = state.activeDay >= g.startNight - 1 && state.activeDay <= g.endNight - 1;
+    const range = g.startNight === g.endNight ? `Nuit ${g.startNight}` : `Nuits ${g.startNight}–${g.endNight}`;
+    return `<button class="lodging-pill ${isCurrent ? 'active' : ''}" data-lodging-group="${i}">
+      <span class="nights">${range}</span>
+      <span class="name">${hotel ? hotel.name.replace(' · ' + state.destination, '') : '—'}</span>
+    </button>`;
+  }).join('');
+  el.querySelectorAll('[data-lodging-group]').forEach(b => {
+    b.addEventListener('click', () => openLodgingModal(+b.dataset.lodgingGroup));
+  });
+}
+
+function coalesceLodging() {
+  const groups = [];
+  state.lodgingByNight.forEach((hid, i) => {
+    const last = groups[groups.length - 1];
+    if (last && last.hotelId === hid) {
+      last.endNight = i + 1;
+    } else {
+      groups.push({ hotelId: hid, startNight: i + 1, endNight: i + 1 });
+    }
+  });
+  return groups;
+}
+
+function renderDay() {
+  const day = state.itinerary[state.activeDay];
+  if (!day) return;
+  const root = document.getElementById('day-content');
+  let html = `<div class="day-section-title">Étapes du jour ${day.day}</div>`;
+  if (day.activities.length === 0) {
+    html += `<div style="padding: 28px 8px; text-align:center; color: var(--ink-muted); font-size: 14px;">Cette journée est vide. Ajoute une activité ci-dessous.</div>`;
+  } else {
+    html += day.activities.map(a => activityHTML(a)).join('');
+  }
+  html += `<button class="add-activity" id="btn-add-activity">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+    Ajouter une activité
+  </button>`;
+
+  // Lodging block for the current day's night
+  const hotelId = state.lodgingByNight[state.activeDay];
+  const hotel = state.hotelOptions.find(h => h.id === hotelId);
+  if (hotel) {
+    html += `<div class="day-section-title" style="margin-top: 22px;">Cette nuit</div>
+    <div class="lodging-card" id="day-lodging">
+      <div class="lodging-img">
+        <div class="lodging-night-badge">Nuit ${state.activeDay + 1}</div>
+        <div class="lodging-edit-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        </div>
+        <img src="${imgUrl(hotel.imgSeed, 400, 200)}" alt="" loading="lazy">
+      </div>
+      <div class="lodging-info">
+        <div>
+          <div class="name">${hotel.name}</div>
+          <div class="meta">${hotel.type} · note ${hotel.rating}</div>
+        </div>
+        <div style="margin-left: auto; text-align: right;">
+          <div class="price">${hotel.price} €<span class="price-unit"> / nuit</span></div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  root.innerHTML = html;
+  attachActivityHandlers();
+  document.getElementById('btn-add-activity')?.addEventListener('click', addActivity);
+  document.getElementById('day-lodging')?.addEventListener('click', () => openLodgingModalForNight(state.activeDay));
+}
+
+function activityHTML(a) {
+  const t = TYPES[a.type] || { label: a.type };
+  return `
+  <div class="swipe-row" data-aid="${a.id}">
+    <div class="swipe-bg">
+      <span class="label">Glisse pour supprimer</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+    </div>
+    <div class="swipe-content">
+      <div class="activity-img">
+        <img src="${imgUrl(a.imgSeed, 120, 120)}" alt="" loading="lazy" onerror="this.style.display='none'">
+      </div>
+      <div class="activity-time">
+        <span class="h">${a.time}</span>
+        <span class="d">${formatDur(a.duration)}</span>
+      </div>
+      <div class="activity-body">
+        <div class="activity-type">${t.label}</div>
+        <div class="activity-title">${a.title}</div>
+        <div class="activity-loc">${a.loc}</div>
+      </div>
+      <div class="drag-handle" title="Glisser pour réordonner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/></svg>
+      </div>
+    </div>
+  </div>`;
+}
+
+function attachActivityHandlers() {
+  document.querySelectorAll('.swipe-row').forEach(row => {
+    const content = row.querySelector('.swipe-content');
+    const handle = row.querySelector('.drag-handle');
+    attachSwipeAndTap(row, content);
+    if (handle) attachDragHandle(row, handle);
+  });
+}
+
+/* ==============================
+ *  SWIPE + TAP HANDLING
+ * ============================== */
+function attachSwipeAndTap(row, content) {
+  let pointerId = null;
+  let startX = 0, startY = 0, startT = 0;
+  let dx = 0, dy = 0;
+  let isSwiping = false;
+  let isTap = true;
+  const SWIPE_THRESHOLD = 110; // px past which we delete on release
+  const SWIPE_LOCK = 8; // px beyond which we commit to swipe (vs tap/scroll)
+
+  function down(e) {
+    if (e.target.closest('.drag-handle')) return; // let handle handle it
+    pointerId = e.pointerId;
+    startX = e.clientX; startY = e.clientY; startT = Date.now();
+    dx = 0; dy = 0;
+    isSwiping = false;
+    isTap = true;
+    content.classList.add('swiping');
+    content.setPointerCapture?.(pointerId);
+  }
+  function move(e) {
+    if (e.pointerId !== pointerId) return;
+    dx = e.clientX - startX;
+    dy = e.clientY - startY;
+    if (!isSwiping) {
+      if (Math.abs(dx) > SWIPE_LOCK && Math.abs(dx) > Math.abs(dy)) {
+        isSwiping = true;
+        isTap = false;
+      } else if (Math.abs(dy) > SWIPE_LOCK) {
+        // vertical scroll: cancel
+        cleanup();
+        return;
+      }
+    }
+    if (isSwiping) {
+      e.preventDefault();
+      const constrained = dx; // allow both directions
+      content.style.transform = `translateX(${constrained}px)`;
+      row.classList.toggle('armed', Math.abs(dx) > SWIPE_THRESHOLD);
+    }
+  }
+  function up(e) {
+    if (e.pointerId !== pointerId) return;
+    const t = Date.now() - startT;
+    const wasTap = isTap && Math.abs(dx) < 6 && Math.abs(dy) < 6 && t < 350;
+    if (wasTap) {
+      cleanup();
+      const aid = row.dataset.aid;
+      openEditModal(aid);
+      return;
+    }
+    if (isSwiping && Math.abs(dx) > SWIPE_THRESHOLD) {
+      // delete
+      content.style.transition = 'transform 0.25s ease';
+      content.style.transform = `translateX(${dx > 0 ? '120%' : '-120%'})`;
+      const aid = row.dataset.aid;
+      setTimeout(() => deleteActivityById(aid), 220);
+    } else {
+      content.style.transform = 'translateX(0)';
+      row.classList.remove('armed');
+    }
+    cleanup();
+  }
+  function cleanup() {
+    content.classList.remove('swiping');
+    if (pointerId !== null) content.releasePointerCapture?.(pointerId);
+    pointerId = null;
+  }
+
+  content.addEventListener('pointerdown', down);
+  content.addEventListener('pointermove', move);
+  content.addEventListener('pointerup', up);
+  content.addEventListener('pointercancel', () => {
+    content.style.transform = 'translateX(0)';
+    row.classList.remove('armed');
+    cleanup();
+  });
+}
+
+/* ==============================
+ *  DRAG-AND-DROP REORDER
+ * ============================== */
+let dragState = null;
+
+function attachDragHandle(row, handle) {
+  handle.addEventListener('pointerdown', onDragStart);
+}
+
+function onDragStart(e) {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  e.preventDefault();
+  e.stopPropagation();
+
+  const handle = e.currentTarget;
+  const row = handle.closest('.swipe-row');
+  if (!row) return;
+
+  const list = row.parentElement;
+  const allRows = [...list.querySelectorAll('.swipe-row')];
+  const originalIdx = allRows.indexOf(row);
+  const rects = allRows.map(r => r.getBoundingClientRect());
+  const positions = rects.map(r => r.top);
+  const rowHeight = row.offsetHeight;
+  // Slot height = distance between two consecutive rows (works even with collapsed margins)
+  const slotHeight = allRows.length >= 2
+    ? Math.abs(positions[1] - positions[0])
+    : rowHeight + 8;
+
+  dragState = {
+    row, list, allRows, originalIdx, currentIdx: originalIdx,
+    startY: e.clientY,
+    positions, rowHeight, slotHeight,
+    pointerId: e.pointerId,
+  };
+
+  row.classList.add('dragging');
+  try { handle.setPointerCapture(e.pointerId); } catch (_) {}
+
+  document.addEventListener('pointermove', onDragMove, { passive: false });
+  document.addEventListener('pointerup', onDragEnd, { once: true });
+  document.addEventListener('pointercancel', onDragEnd, { once: true });
+}
+
+function onDragMove(e) {
+  if (!dragState) return;
+  if (e.pointerId !== dragState.pointerId) return;
+  e.preventDefault();
+
+  const dy = e.clientY - dragState.startY;
+  dragState.row.style.transform = `translateY(${dy}px)`;
+
+  const draggedCenterY =
+    dragState.positions[dragState.originalIdx] + dy + dragState.rowHeight / 2;
+
+  let newIdx = dragState.originalIdx;
+  for (let i = 0; i < dragState.allRows.length; i++) {
+    if (i === dragState.originalIdx) continue;
+    const otherCenter = dragState.positions[i] + dragState.allRows[i].offsetHeight / 2;
+    if (i < dragState.originalIdx) {
+      if (draggedCenterY < otherCenter) { newIdx = i; break; }
+    } else {
+      if (draggedCenterY > otherCenter) newIdx = i;
+    }
+  }
+
+  if (newIdx !== dragState.currentIdx) {
+    dragState.currentIdx = newIdx;
+    dragState.allRows.forEach((r, i) => {
+      if (i === dragState.originalIdx) return;
+      r.classList.add('shifting');
+      let shift = 0;
+      if (i > dragState.originalIdx && i <= newIdx) shift = -dragState.slotHeight;
+      else if (i < dragState.originalIdx && i >= newIdx) shift = dragState.slotHeight;
+      r.style.transform = `translateY(${shift}px)`;
+    });
+  }
+}
+
+function onDragEnd() {
+  if (!dragState) return;
+  document.removeEventListener('pointermove', onDragMove);
+
+  const day = state.itinerary[state.activeDay];
+  const aid = dragState.row.dataset.aid;
+  const myIdx = day.activities.findIndex(a => a.id === aid);
+  const newIdx = dragState.currentIdx;
+
+  if (newIdx !== myIdx && newIdx >= 0 && myIdx >= 0) {
+    const [moved] = day.activities.splice(myIdx, 1);
+    day.activities.splice(newIdx, 0, moved);
+    relinearizeTimes(day.activities);
+    observeMove();
+  }
+
+  dragState.allRows.forEach(r => {
+    r.classList.remove('dragging', 'shifting');
+    r.style.transform = '';
+    r.style.zIndex = '';
+  });
+  dragState = null;
+
+  renderDay();
+  renderInsight();
+}
+
+function relinearizeTimes(activities) {
+  // After manual reorder, re-cascade times so the order matches the displayed sequence
+  if (activities.length === 0) return;
+  let cursor = parseTime(activities[0].time);
+  for (let i = 0; i < activities.length; i++) {
+    const a = activities[i];
+    if (i === 0) {
+      cursor = parseTime(a.time);
+    } else {
+      a.time = formatTime(cursor);
+    }
+    cursor += a.duration + 15;
+  }
+}
+
+/* ==============================
+ *  ACTIONS
+ * ============================== */
+function deleteActivityById(aid) {
+  const day = state.itinerary[state.activeDay];
+  const idx = day.activities.findIndex(a => a.id === aid);
+  if (idx < 0) return;
+  const removed = day.activities[idx];
+  day.activities.splice(idx, 1);
+  observeRemoval(removed);
+  renderDay();
+}
+
+function addActivity() {
+  const day = state.itinerary[state.activeDay];
+  const last = day.activities[day.activities.length - 1];
+  const startMin = last ? parseTime(last.time) + last.duration + 15 : 15 * 60;
+  const id = `add-${uid()}`;
+  const newAct = {
+    id,
+    type: 'walk',
+    time: formatTime(startMin),
+    duration: 60,
+    title: 'Activité libre',
+    loc: `${state.destination}, à préciser`,
+    imgSeed: id,
+  };
+  day.activities.push(newAct);
+  state.observed.added++;
+  state.observed.total++;
+  pushEvent(`+ Activité ajoutée (Jour ${day.day})`);
+  renderDay();
+  renderInsight();
+  maybeTriggerManyEdits();
+  // Open edit immediately
+  setTimeout(() => openEditModal(id), 50);
+}
+
+/* ==============================
+ *  EDIT MODAL
+ * ============================== */
+function openEditModal(aid) {
+  const day = state.itinerary[state.activeDay];
+  const act = day.activities.find(a => a.id === aid);
+  if (!act) return;
+  state.editing = { aid, draft: { ...act } };
+
+  const root = document.getElementById('modal-edit-body');
+  root.innerHTML = renderEditForm(state.editing.draft);
+  attachEditFormHandlers();
+
+  document.getElementById('modal-edit').classList.add('show');
+  document.getElementById('modal-edit-bg').classList.add('show');
+}
+function closeEditModal() {
+  document.getElementById('modal-edit').classList.remove('show');
+  document.getElementById('modal-edit-bg').classList.remove('show');
+  state.editing = null;
+}
+
+function renderEditForm(d) {
+  const typeChips = Object.entries(TYPES).map(([k, v]) =>
+    `<button class="chip ${k === d.type ? 'active' : ''}" data-type="${k}">${v.label}</button>`
+  ).join('');
+  const durChips = [30, 45, 60, 90, 120, 180].map(m =>
+    `<button class="chip ${m === d.duration ? 'active' : ''}" data-dur="${m}">${formatDur(m)}</button>`
+  ).join('');
+  return `
+    <div class="field">
+      <label class="field-mini-label">Activité</label>
+      <input class="input-base" id="edit-title" type="text" value="${escapeHtml(d.title)}">
+    </div>
+    <div class="field">
+      <label class="field-mini-label">Type</label>
+      <div class="chip-row" id="edit-types">${typeChips}</div>
+    </div>
+    <div class="field" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div>
+        <label class="field-mini-label">Heure de début</label>
+        <input class="input-base input-time" id="edit-time" type="time" value="${d.time}">
+      </div>
+      <div>
+        <label class="field-mini-label">Durée</label>
+        <input class="input-base input-time" id="edit-dur-display" type="text" readonly value="${formatDur(d.duration)}">
+      </div>
+    </div>
+    <div class="field">
+      <div class="duration-grid" id="edit-durations">${durChips}</div>
+    </div>
+    <div class="field">
+      <label class="field-mini-label">Lieu</label>
+      <input class="input-base" id="edit-loc" type="text" value="${escapeHtml(d.loc)}">
+    </div>
+    <div class="notice">
+      <strong>Réagencement intelligent.</strong> Si tu changes l'heure ou la durée, les autres étapes se décalent pour éviter les chevauchements.
+    </div>
+  `;
+}
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function attachEditFormHandlers() {
+  const d = state.editing.draft;
+  document.getElementById('edit-title').addEventListener('input', e => d.title = e.target.value);
+  document.getElementById('edit-loc').addEventListener('input', e => d.loc = e.target.value);
+  document.getElementById('edit-time').addEventListener('input', e => d.time = e.target.value);
+  document.querySelectorAll('#edit-types .chip').forEach(c => {
+    c.addEventListener('click', () => {
+      d.type = c.dataset.type;
+      // Suggest default duration only if it matches what was the prior type's default
+      document.querySelectorAll('#edit-types .chip').forEach(x => x.classList.toggle('active', x.dataset.type === d.type));
+    });
+  });
+  document.querySelectorAll('#edit-durations .chip').forEach(c => {
+    c.addEventListener('click', () => {
+      d.duration = +c.dataset.dur;
+      document.querySelectorAll('#edit-durations .chip').forEach(x => x.classList.toggle('active', +x.dataset.dur === d.duration));
+      document.getElementById('edit-dur-display').value = formatDur(d.duration);
+    });
+  });
+}
+
+document.getElementById('modal-edit-cancel').onclick = closeEditModal;
+document.getElementById('modal-edit-bg').onclick = closeEditModal;
+document.getElementById('modal-edit-save').onclick = () => {
+  if (!state.editing) return;
+  const day = state.itinerary[state.activeDay];
+  const idx = day.activities.findIndex(a => a.id === state.editing.aid);
+  if (idx >= 0) {
+    day.activities[idx] = { ...day.activities[idx], ...state.editing.draft };
+    resolveOverlaps(day.activities, state.editing.aid);
+    state.observed.edited++;
+    state.observed.total++;
+    pushEvent(`✎ Étape modifiée (Jour ${day.day})`);
+  }
+  closeEditModal();
+  renderDay();
+  renderInsight();
+  maybeTriggerManyEdits();
+};
+document.getElementById('modal-edit-delete').onclick = () => {
+  if (!state.editing) return;
+  const aid = state.editing.aid;
+  closeEditModal();
+  setTimeout(() => deleteActivityById(aid), 100);
+};
+
+/* ==============================
+ *  LODGING MODAL
+ * ============================== */
+function openLodgingModalForNight(nightIdx) {
+  const groups = coalesceLodging();
+  const groupIdx = groups.findIndex(g => nightIdx + 1 >= g.startNight && nightIdx + 1 <= g.endNight);
+  openLodgingModal(groupIdx);
+}
+function openLodgingModal(groupIdx) {
+  const groups = coalesceLodging();
+  const g = groups[groupIdx] || groups[0];
+  state.lodgingEditing = {
+    groupIdx,
+    startNight: g.startNight,
+    endNight: g.endNight,
+    hotelId: g.hotelId,
+  };
+  renderLodgingModalBody();
+  document.getElementById('modal-lodging').classList.add('show');
+  document.getElementById('modal-lodging-bg').classList.add('show');
+}
+function closeLodgingModal() {
+  document.getElementById('modal-lodging').classList.remove('show');
+  document.getElementById('modal-lodging-bg').classList.remove('show');
+  state.lodgingEditing = null;
+}
+function renderLodgingModalBody() {
+  const e = state.lodgingEditing;
+  const totalNights = state.duration;
+  const n = e.endNight - e.startNight + 1;
+
+  const hotelsHtml = state.hotelOptions.map(h => `
+    <div class="hotel-card ${h.id === e.hotelId ? 'selected' : ''}" data-hid="${h.id}">
+      <div class="hotel-card-img">
+        <img src="${imgUrl(h.imgSeed, 600, 280)}" alt="" loading="lazy" onerror="this.style.display='none'">
+      </div>
+      <div class="hotel-card-info">
+        <div>
+          <div class="name">${h.name}</div>
+          <div class="type">${h.type} · note ${h.rating}${h.recommended ? ' · suggéré pour toi' : ''}</div>
+        </div>
+        <div style="text-align: right;">
+          <div class="price">${h.price} €</div>
+          <div class="price-unit">/ nuit</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const totalEnd = e.startNight + n - 1;
+  document.getElementById('modal-lodging-body').innerHTML = `
+    <div class="field">
+      <label class="field-mini-label">Pour combien de nuits ?</label>
+      <div class="lodging-range">
+        <div class="range-stepper">
+          <button id="lod-minus" ${n <= 1 ? 'disabled' : ''}>−</button>
+          <span class="val">${n}</span>
+          <button id="lod-plus" ${totalEnd >= totalNights ? 'disabled' : ''}>+</button>
+        </div>
+        <span style="color: var(--ink-muted); font-size: 14px;">
+          ${n === 1 ? `Nuit ${e.startNight}` : `Nuits ${e.startNight} → ${e.startNight + n - 1}`}
+          · ${n} nuit${n > 1 ? 's' : ''}
+        </span>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-mini-label">Choisir l'hébergement</label>
+      <div class="hotel-list" id="hotel-list">${hotelsHtml}</div>
+    </div>
+  `;
+  document.getElementById('lod-minus').onclick = () => {
+    state.lodgingEditing.endNight = Math.max(state.lodgingEditing.startNight, state.lodgingEditing.endNight - 1);
+    renderLodgingModalBody();
+  };
+  document.getElementById('lod-plus').onclick = () => {
+    state.lodgingEditing.endNight = Math.min(totalNights, state.lodgingEditing.endNight + 1);
+    renderLodgingModalBody();
+  };
+  document.querySelectorAll('#hotel-list .hotel-card').forEach(c => {
+    c.addEventListener('click', () => {
+      state.lodgingEditing.hotelId = c.dataset.hid;
+      renderLodgingModalBody();
+    });
+  });
+}
+
+document.getElementById('modal-lodging-cancel').onclick = closeLodgingModal;
+document.getElementById('modal-lodging-bg').onclick = closeLodgingModal;
+document.getElementById('modal-lodging-save').onclick = () => {
+  if (!state.lodgingEditing) return;
+  const e = state.lodgingEditing;
+  for (let i = e.startNight - 1; i <= e.endNight - 1; i++) {
+    state.lodgingByNight[i] = e.hotelId;
+  }
+  pushEvent(`✓ Hébergement nuit${e.endNight > e.startNight ? 's' : ''} ${e.startNight}${e.endNight > e.startNight ? '–' + e.endNight : ''}`);
+  // Infer budget signal from chosen hotel
+  const hotel = state.hotelOptions.find(h => h.id === e.hotelId);
+  if (hotel) addInference(`Budget hébergement: ~${hotel.price} €/nuit`);
+  closeLodgingModal();
+  renderLodgingStrip();
+  renderDay();
+  renderInsight();
+};
+
+/* ==============================
+ *  SAVE MODAL · ACCOUNT
+ * ============================== */
+function openSaveModal() {
+  document.getElementById('modal-save').classList.add('show');
+  document.getElementById('modal-save-bg').classList.add('show');
+  renderSaveBody();
+}
+function closeSaveModal() {
+  document.getElementById('modal-save').classList.remove('show');
+  document.getElementById('modal-save-bg').classList.remove('show');
+}
+function renderSaveBody(success = false) {
+  const root = document.getElementById('modal-save-body');
+  if (success) {
+    root.innerHTML = `
+      <div class="save-success">
+        <div class="save-success-orb">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <div style="font-size: 24px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px;">Itinéraire sauvegardé.</div>
+        <div style="font-size: 14px; color: var(--ink-soft); max-width: 280px; line-height: 1.5;">
+          Tu peux retrouver ton itinéraire à tout moment depuis ton profil.
+        </div>
+        <button class="btn btn-primary" id="save-success-close" style="margin-top: 28px; max-width: 240px;">C'est parti</button>
+      </div>
+    `;
+    document.getElementById('save-success-close').onclick = closeSaveModal;
+    return;
+  }
+  const sub = `${state.duration} jours · ${state.itinerary.reduce((n, d) => n + d.activities.length, 0)} étapes`;
+  root.innerHTML = `
+    <div class="save-headline">Crée un compte pour sauvegarder.</div>
+    <div class="save-sub">On garde ton itinéraire, tes préférences, et l'historique de tes ajustements.</div>
+    <div class="save-summary">
+      <div class="save-summary-glyph">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <div class="save-summary-info">
+        <div class="save-summary-title">${state.destination}</div>
+        <div class="save-summary-sub">${sub}</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-mini-label">Prénom</label>
+      <input class="input-base" id="save-name" type="text" placeholder="Comment t'appelles-tu ?">
+    </div>
+    <div class="field">
+      <label class="field-mini-label">Email</label>
+      <input class="input-base" id="save-email" type="email" placeholder="ton@email.com">
+    </div>
+    <div class="field">
+      <label class="field-mini-label">Mot de passe</label>
+      <input class="input-base" id="save-pw" type="password" placeholder="Choisis un mot de passe">
+    </div>
+    <button class="btn btn-primary" id="save-submit" style="margin-top: 14px;">Créer mon compte et sauvegarder</button>
+    <button class="btn btn-ghost" id="save-existing">J'ai déjà un compte</button>
+    <button class="btn btn-ghost" id="save-skip" style="color: var(--ink-faint);">Plus tard</button>
+  `;
+  document.getElementById('save-submit').onclick = () => {
+    const name = document.getElementById('save-name').value.trim() || 'Voyageur';
+    state.account = { name, email: document.getElementById('save-email').value };
+    state.saved = true;
+    pushEvent(`✓ Compte créé · itinéraire sauvegardé`);
+    addInference(`Compte: ${name}`);
+    renderSaveBody(true);
+    updateSaveBtn();
+    renderInsight();
+  };
+  document.getElementById('save-existing').onclick = () => {
+    state.saved = true;
+    state.account = { name: 'Membre', email: '' };
+    pushEvent(`✓ Connexion · itinéraire sauvegardé`);
+    renderSaveBody(true);
+    updateSaveBtn();
+  };
+  document.getElementById('save-skip').onclick = closeSaveModal;
+}
+function updateSaveBtn() {
+  const btn = document.getElementById('btn-save');
+  const lbl = document.getElementById('save-btn-label');
+  if (state.saved) {
+    btn.classList.add('saved');
+    lbl.textContent = 'Itinéraire sauvegardé';
+  } else {
+    btn.classList.remove('saved');
+    lbl.textContent = 'Enregistrer cet itinéraire';
+  }
+}
+document.getElementById('modal-save-cancel').onclick = closeSaveModal;
+document.getElementById('modal-save-bg').onclick = closeSaveModal;
+document.getElementById('btn-save').onclick = openSaveModal;
+
+/* ==============================
+ *  OBSERVATION
+ * ============================== */
+function observeRemoval(act) {
+  state.observed.removed[act.type] = (state.observed.removed[act.type] || 0) + 1;
+  state.observed.total++;
+  pushEvent(`− "${truncate(act.title, 28)}"`);
+  if (state.observed.removed[act.type] >= 2 && !state.triggered['type-' + act.type]) {
+    state.triggered['type-' + act.type] = true;
+    enqueueSheet({ kind: 'aversion', type: act.type, label: TYPES[act.type]?.label || act.type });
+  }
+  renderInsight();
+  maybeTriggerManyEdits();
+}
+function observeMove() {
+  state.observed.moved++;
+  state.observed.total++;
+  pushEvent(`↕ Réorganisation d'une étape`);
+  renderInsight();
+  maybeTriggerManyEdits();
+}
+function maybeTriggerManyEdits() {
+  if (state.observed.total >= 5 && !state.triggered.manyEdits) {
+    state.triggered.manyEdits = true;
+    enqueueSheet({ kind: 'many-edits' });
+  }
+}
+function pushEvent(msg) {
+  const now = new Date();
+  state.events.unshift({
+    ts: `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`,
+    msg, fresh: true,
+  });
+  state.events = state.events.slice(0, 8);
+}
+function addInference(text) {
+  if (!state.inferred.includes(text)) {
+    state.inferred.unshift(text);
+    state.inferred = state.inferred.slice(0, 6);
+  }
+  renderInsight();
+}
+
+/* ==============================
+ *  CONTEXTUAL SHEET
+ * ============================== */
+function enqueueSheet(payload) {
+  state.sheetQueue.push(payload);
+  if (!state.sheetActive) processSheetQueue();
+}
+function processSheetQueue() {
+  const next = state.sheetQueue.shift();
+  if (!next) return;
+  state.sheetActive = true;
+  showSheet(next);
+}
+function showSheet(payload) {
+  const sheet = document.getElementById('sheet');
+  const titleEl = document.getElementById('sheet-title');
+  const bodyEl = document.getElementById('sheet-body');
+  const actionsEl = document.getElementById('sheet-actions');
+  const labelEl = document.getElementById('sheet-label');
+
+  if (payload.kind === 'aversion') {
+    labelEl.textContent = 'Une question rapide';
+    titleEl.textContent = `Tu as supprimé plusieurs ${payload.label.toLowerCase()}s.`;
+    bodyEl.textContent = `Tu préfères qu'on en propose moins dans la suite ?`;
+    actionsEl.innerHTML = `
+      <button class="btn btn-primary" data-sheet="yes">Oui, évite-en</button>
+      <button class="btn btn-secondary" data-sheet="no">Non, c'était ces lieux-ci</button>
+    `;
+    actionsEl.querySelector('[data-sheet="yes"]').onclick = () => {
+      addInference(`Évite les ${payload.label.toLowerCase()}s`);
+      pushEvent(`✓ Préférence: éviter ${payload.label.toLowerCase()}s`);
+      closeSheet();
+    };
+    actionsEl.querySelector('[data-sheet="no"]').onclick = () => {
+      pushEvent(`Indication: pas une aversion générale`);
+      closeSheet();
+    };
+  } else if (payload.kind === 'lodging') {
+    labelEl.textContent = 'Hébergement';
+    titleEl.textContent = `Cet hébergement est dans tes clous ?`;
+    bodyEl.textContent = `On utilisera ce repère de prix pour t'en proposer d'autres dans la suite.`;
+    actionsEl.innerHTML = `
+      <button class="btn btn-primary" data-sheet="ok">C'est OK</button>
+      <button class="btn btn-secondary" data-sheet="lower">Plutôt moins cher</button>
+    `;
+    actionsEl.querySelector('[data-sheet="ok"]').onclick = () => {
+      addInference(`Budget hébergement: confirmé`);
+      pushEvent(`✓ Budget hébergement validé`);
+      closeSheet();
+    };
+    actionsEl.querySelector('[data-sheet="lower"]').onclick = () => {
+      addInference(`Budget hébergement: recherche moins cher`);
+      pushEvent(`✓ Budget hébergement à revoir`);
+      closeSheet();
+    };
+  } else if (payload.kind === 'many-edits') {
+    labelEl.textContent = 'On affine ?';
+    titleEl.textContent = `Tu modifies beaucoup l'itinéraire.`;
+    bodyEl.textContent = `Tu veux qu'on précise ce que tu cherches ? Ça prend deux questions.`;
+    actionsEl.innerHTML = `
+      <button class="btn btn-primary" data-sheet="yes">Oui, allons-y</button>
+      <button class="btn btn-secondary" data-sheet="no">Non, je continue</button>
+    `;
+    actionsEl.querySelector('[data-sheet="yes"]').onclick = () => {
+      pushEvent(`✓ Affinage relancé`);
+      closeSheet();
+    };
+    actionsEl.querySelector('[data-sheet="no"]').onclick = () => {
+      pushEvent(`Indication: continuer sans affinage`);
+      closeSheet();
+    };
+  }
+
+  setTimeout(() => sheet.classList.add('show'), 50);
+  renderInsight();
+}
+function closeSheet() {
+  const sheet = document.getElementById('sheet');
+  sheet.classList.remove('show');
+  setTimeout(() => {
+    state.sheetActive = false;
+    processSheetQueue();
+    renderInsight();
+  }, 350);
+}
+document.getElementById('sheet-skip').onclick = () => {
+  pushEvent(`Question reportée`);
+  closeSheet();
+};
+
+/* ==============================
+ *  INSIGHT PANEL
+ * ============================== */
+function renderInsight() {
+  const ex = document.getElementById('insight-explicit');
+  ex.innerHTML = `
+    ${insightRow('Destination', state.destination || null)}
+    ${insightRow('Durée', state.duration ? `${state.duration} jours` : null)}
+    ${insightRow('Rythme', formatPref('rhythm', state.prefs.rhythm))}
+    ${insightRow('Ambiance', formatPref('vibe', state.prefs.vibe))}
+    ${insightRow('Découverte', formatPref('discovery', state.prefs.discovery))}
+    ${insightRow('Compagnie', formatPref('company', state.prefs.company))}
+    ${insightRow('Budget', formatPref('budget', state.prefs.budget))}
+    ${insightRow('Hébergement', formatPref('lodging', state.prefs.lodging))}
+  `;
+
+  const obs = document.getElementById('insight-observed');
+  if (state.events.length === 0) {
+    obs.innerHTML = `<div class="insight-empty">Rien encore. Édite l'itinéraire pour voir.</div>`;
+  } else {
+    obs.innerHTML = state.events.map((e, i) =>
+      `<div class="insight-event ${i === 0 && e.fresh ? 'new' : ''}">
+        <span class="ts">${e.ts}</span><span class="msg">${e.msg}</span>
+      </div>`
+    ).join('');
+    state.events.forEach(e => e.fresh = false);
+  }
+
+  const inf = document.getElementById('insight-inferred');
+  inf.innerHTML = state.inferred.length === 0
+    ? `<div class="insight-empty">Aucune inférence pour l'instant.</div>`
+    : state.inferred.map((t, i) => `<span class="insight-tag ${i === 0 ? 'fresh' : ''}">${t}</span>`).join(' ');
+}
+function insightRow(key, val) {
+  if (val === null || val === undefined || val === '') {
+    return `<div class="insight-row"><span class="key">${key}</span><span class="val empty">—</span></div>`;
+  }
+  return `<div class="insight-row"><span class="key">${key}</span><span class="val">${val}</span></div>`;
+}
+function formatPref(kind, val) {
+  if (!val) return null;
+  const map = {
+    rhythm: { calm: 'Tranquille', intense: 'Soutenu' },
+    vibe: { popular: 'Incontournables', hidden: 'Coins discrets' },
+    discovery: { culture: 'Culture & patrimoine', food: 'Saveurs & marchés' },
+    company: { duo: 'Solo ou duo', group: 'En groupe' },
+    budget: { measured: 'Mesuré', free: 'Confortable' },
+    lodging: { hotel: 'Hôtel', charm: 'Maison de charme' },
+  };
+  return map[kind][val] || val;
+}
+
+/* ==============================
+ *  DRAWER (profile)
+ * ============================== */
+function renderDrawer() {
+  const root = document.getElementById('drawer-body');
+  root.innerHTML = `
+    <div class="drawer-section">
+      <div class="drawer-section-title">${state.account ? 'Connecté en tant que' : 'Compte'}</div>
+      ${state.account
+        ? `<div class="profile-row"><span class="key">Prénom</span><span class="val">${escapeHtml(state.account.name)}</span></div>`
+        : `<div style="font-size: 14px; color: var(--ink-muted);">Pas encore de compte. Sauvegarde ton itinéraire pour en créer un.</div>`
+      }
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Voyage en cours</div>
+      <div class="profile-row"><span class="key">Destination</span><span class="val">${state.destination || '—'}</span></div>
+      <div class="profile-row"><span class="key">Durée</span><span class="val">${state.duration} jours</span></div>
+      <div class="profile-row"><span class="key">État</span><span class="val">${state.saved ? 'Sauvegardé' : 'Non sauvegardé'}</span></div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Préférences</div>
+      ${['rhythm','vibe','discovery','company','budget','lodging'].map(k => {
+        const labels = { rhythm:'Rythme', vibe:'Ambiance', discovery:'Découverte', company:'Compagnie', budget:'Budget', lodging:'Hébergement' };
+        const v = formatPref(k, state.prefs[k]);
+        return `<div class="profile-row"><span class="key">${labels[k]}</span><span class="val ${v ? '' : 'empty'}">${v || 'À préciser'}</span></div>`;
+      }).join('')}
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-title">Ce que j'apprends de toi</div>
+      ${state.inferred.length === 0
+        ? `<div style="font-size: 14px; color: var(--ink-faint); font-style: italic;">Continue à utiliser l'app, j'apprends en silence.</div>`
+        : state.inferred.map(t => `<div class="profile-row"><span class="val">${t}</span></div>`).join('')
+      }
+    </div>
+  `;
+}
+document.getElementById('btn-profile').onclick = () => {
+  renderDrawer();
+  document.getElementById('drawer').classList.add('show');
+  document.getElementById('drawer-backdrop').classList.add('show');
+};
+document.getElementById('btn-close-drawer').onclick = closeDrawer;
+document.getElementById('drawer-backdrop').onclick = closeDrawer;
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('show');
+  document.getElementById('drawer-backdrop').classList.remove('show');
+}
+document.getElementById('btn-overview').onclick = () => {
+  // For prototype: jump to a quick overview by scrolling tabs
+  state.activeDay = 0; renderItinerary();
+};
+
+/* ==============================
+ *  EVENT WIRING
+ * ============================== */
+document.querySelectorAll('[data-go]').forEach(b => {
+  b.addEventListener('click', () => showScreen(b.dataset.go));
+});
+document.querySelectorAll('[data-jump]').forEach(b => {
+  b.addEventListener('click', () => {
+    const t = b.dataset.jump;
+    if (t === 'itinerary') ensureItinerary();
+    showScreen(t);
+  });
+});
+document.querySelectorAll('.flow-step').forEach(el => {
+  el.addEventListener('click', () => {
+    const f = el.dataset.flow;
+    if (f.startsWith('phase2')) {
+      ensureItinerary();
+      showScreen('itinerary');
+      if (f === 'phase2-q') enqueueSheet({ kind: 'aversion', type: 'museum', label: 'Musée' });
+      if (f === 'phase2-c') enqueueSheet({ kind: 'lodging' });
+    } else {
+      const map = { welcome:'welcome', step1:'step1', step2:'step2', step3:'step3', itinerary:'itinerary' };
+      if (map[f]) {
+        if (f === 'itinerary') ensureItinerary();
+        showScreen(map[f]);
+      }
+    }
+  });
+});
+function ensureItinerary() {
+  if (state.itinerary.length > 0) return;
+  if (!state.destination) state.destination = 'Lisbonne';
+  state.prefs.rhythm = state.prefs.rhythm || 'calm';
+  state.prefs.vibe = state.prefs.vibe || 'hidden';
+  state.prefs.discovery = state.prefs.discovery || 'food';
+  state.prefs.company = state.prefs.company || 'duo';
+  state.prefs.budget = state.prefs.budget || 'measured';
+  state.prefs.lodging = state.prefs.lodging || 'charm';
+  buildItinerary();
+}
+function buildItinerary() {
+  state.hotelOptions = generateHotelOptions(state.destination, state.prefs);
+  state.itinerary = generateItinerary(state.destination, state.duration, state.prefs);
+  // Initial lodging assignment: same hotel for all nights
+  const initial = pickInitialHotel(state.hotelOptions, state.prefs);
+  state.lodgingByNight = Array(state.duration).fill(initial.id);
+  state.activeDay = 0;
+  renderItinerary();
+  renderInsight();
+  updateSaveBtn();
+}
+
+// Step 1
+const destInput = document.getElementById('dest-input');
+const durationInput = document.getElementById('duration-input');
+const durationVal = document.getElementById('duration-val');
+const step1Next = document.getElementById('btn-step1-next');
+destInput.addEventListener('input', () => {
+  state.destination = destInput.value.trim();
+  step1Next.disabled = state.destination.length < 2;
+  renderInsight();
+});
+document.querySelectorAll('[data-dest]').forEach(b => {
+  b.addEventListener('click', () => {
+    destInput.value = b.dataset.dest;
+    state.destination = b.dataset.dest;
+    step1Next.disabled = false;
+    renderInsight();
+  });
+});
+durationInput.addEventListener('input', () => {
+  state.duration = +durationInput.value;
+  durationVal.textContent = state.duration;
+  renderInsight();
+});
+step1Next.addEventListener('click', () => showScreen('step2'));
+
+// Step 2 + 3 choices
+document.querySelectorAll('[data-choice]').forEach(card => {
+  card.addEventListener('click', () => {
+    const k = card.dataset.choice;
+    state.prefs[k] = card.dataset.value;
+    document.querySelectorAll(`[data-choice="${k}"]`).forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    document.getElementById('btn-step2-next').disabled =
+      !(state.prefs.rhythm && state.prefs.vibe && state.prefs.discovery);
+    document.getElementById('btn-step3-next').disabled =
+      !(state.prefs.company && state.prefs.budget && state.prefs.lodging);
+    renderInsight();
+  });
+});
+document.getElementById('btn-step2-next').addEventListener('click', () => showScreen('step3'));
+document.getElementById('btn-step3-next').addEventListener('click', () => {
+  showScreen('generating');
+  setTimeout(() => {
+    buildItinerary();
+    showScreen('itinerary');
+  }, 1300);
+});
+
+// Reset
+document.getElementById('btn-reset').addEventListener('click', () => {
+  Object.assign(state, {
+    screen: 'welcome',
+    destination: '', duration: 4,
+    prefs: { rhythm: null, vibe: null, discovery: null, company: null, budget: null, lodging: null },
+    itinerary: [], lodgingByNight: [], hotelOptions: [],
+    activeDay: 0,
+    observed: { removed: {}, added: 0, moved: 0, edited: 0, total: 0 },
+    inferred: [], events: [], triggered: { lodging: false, manyEdits: false },
+    sheetQueue: [], sheetActive: false,
+    editing: null, lodgingEditing: null,
+    saved: false, account: null,
+  });
+  destInput.value = '';
+  durationInput.value = 4;
+  durationVal.textContent = '4';
+  step1Next.disabled = true;
+  document.getElementById('btn-step2-next').disabled = true;
+  document.getElementById('btn-step3-next').disabled = true;
+  document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+  closeDrawer(); closeEditModal(); closeLodgingModal(); closeSaveModal();
+  document.getElementById('sheet').classList.remove('show');
+  updateSaveBtn();
+  renderInsight();
+  showScreen('welcome');
+});
+
+// Stress test
+let stressIdx = 0;
+document.getElementById('btn-stress').addEventListener('click', () => {
+  if (state.screen !== 'itinerary') {
+    ensureItinerary();
+    showScreen('itinerary');
+  }
+  const triggers = [
+    { kind: 'aversion', type: 'museum', label: 'Musée' },
+    { kind: 'lodging' },
+    { kind: 'many-edits' },
+  ];
+  enqueueSheet(triggers[stressIdx % triggers.length]);
+  stressIdx++;
+});
+
+// Initial render
+renderInsight();
+
+</script>
+</body>
+</html>

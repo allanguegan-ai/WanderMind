@@ -1,0 +1,7 @@
+.DS_Store
+.idea/
+.vscode/
+node_modules/
+
+# Segment Alt font files — commercial license, not redistributable
+FONT SegmentALT/
